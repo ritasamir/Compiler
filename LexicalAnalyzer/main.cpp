@@ -1,24 +1,34 @@
 #include <iostream>
 #include <vector>
-#include "Elem.h"
-#define MAXSIZE 10
+#include<set>
+#include "Minimization.h"
+#define MAXSIZE 2
+
 using namespace std;
 
 
-Elem transitionTable [MAXSIZE][MAXSIZE];
 int startState;
-vector<int> acceptStates;
+int nStates;// number f states
+int nInputs;
+set<int> acceptStates;
+
 
 int main() {
-    return 0;
-}
-void getNFA (string rulesFile){
-    //regular expression to NFA
-}
+    nInputs=2;
+    int DFA [5][2]={{2,1},
+                    {3,0},
+                    {4,3},
+                    {3,3},
+                    {2,1}};
 
-void getDFA (Elem NFA[][MAXSIZE]){
-    //translate the NFA to DFA
-}
-void minimize (Elem transitionTable[][MAXSIZE]){
-    //minimize the DFA
+    acceptStates.insert(4);
+    acceptStates.insert(0);
+
+    Minimization min;
+    min.nStates=5;
+    min.acceptStates=acceptStates;
+    min.nInputs=2;
+    min.minimize(DFA);
+
+    return 0;
 }
