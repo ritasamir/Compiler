@@ -6,8 +6,14 @@
 #include <regex>
 #include "LexicalAnalyzer.h"
 #include "LexicalRulesParser.h"
+#include "global.h"
 
 using namespace std;
+
+map <string, string> regularExpressions;
+vector<string> keywords;
+vector<string> punctuations;
+
 int main(int argc,char* argv[]) {
     if (argc < 2) {
         cout << "Wrong number of files passed\n";

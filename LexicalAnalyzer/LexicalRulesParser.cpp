@@ -3,6 +3,7 @@
 //
 
 #include "LexicalRulesParser.h"
+#include "global.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -11,6 +12,7 @@
 #include <string.h>
 #include <algorithm>
 #include <regex>
+
 void findAndReplaceAll(std::string & data, std::string toSearch, std::string replaceStr)
 {
     // Get the first occurrence
@@ -32,54 +34,48 @@ void parseRulesFile(ifstream &rulesFile) {
         exit(1);
     }
     string line;
-    vector<map<string, string>> tokens_types;
-    map <string, string> regularDefinitions;
-    map <string, string> regularExpressions;
-    vector<string> keywords;
-    vector<char *> punctuations;
+    vector<vector<string>> regularDefinitions;
+
 
     /* TODO mention assumption in report */
     /* All regular definitions are written in the standard form of regex*/
-    char reserved_symbols[] = {'(', ')', '|', '*', '+', '-'};
+
     while (getline(rulesFile, line)) {
         if (regex_match(line, regex("[a-zA-Z](\\w)*(\\s)*=(\\s)*(\.)+"))) {  /* Regular Definition */
             line.erase(remove_if(line.begin(), line.end(),
                     [](unsigned char x){return std::isspace(x);}), line.end());
             string key = strtok((char *)line.c_str(), "=");
             string value = strtok(NULL, "=");
-            for (auto const& x : regularDefinitions)
-            {
-                findAndReplaceAll(value, x.first, x.second);
+            for (int i = 0; i < regularDefinitions.size(); i++) {
+                findAndReplaceAll(value, regularDefinitions[i][0], regularDefinitions[i][1]);
             }
-            regularDefinitions.insert(pair<string,string>(key, value));
-        } else if (regex_match(line, regex("[a-zA-Z](\\w)*(\\s)*:(\\s)*(\.)+"))) { /* Regular definition */
-            //line.erase(remove_if(line.begin(), line.end(),
-              //                   [](unsigned char x){return std::isspace(x);}), line.end());
+            regularDefinitions.insert(regularDefinitions.begin(), {key, value});
+        } else if (regex_match(line, regex("[a-zA-Z](\\w)*(\\s)*(:)(\\s)*(\.)+"))) { /* Regular definition */
+            line.erase(remove_if(line.begin(), line.end(),
+                                 [](unsigned char x){return std::isspace(x);}), line.end());
             string key = strtok((char *)line.c_str(), ":");
             string value = strtok(NULL, ":");
-            for (auto const& x : regularDefinitions)
-            {
-                findAndReplaceAll(value, x.first, x.second);
+            for (int i = 0; i < regularDefinitions.size(); i++) {
+                findAndReplaceAll(value, regularDefinitions[i][0], regularDefinitions[i][1]);
             }
             regularExpressions.insert(pair<string,string>(key, value));
         } else if(regex_match(line, regex("\\{(\\s)*(\.)+(\\s)*\\}"))) { /* keywords */
-            string kw = strtok((char *)line.c_str(), " {}");
-            while (!kw.empty()) {
+            char* kw = strtok((char *)line.c_str(), " {}");
+            while (kw != NULL) {
                 keywords.push_back(kw);
                 kw = strtok(NULL, " {}");
             }
-        } else if (regex_match(line, regex("\\[(\\.)+\\]"))) { /* Punctuations */
+        } else if (regex_match(line, regex("\\[(\\s)*(\.)+(\\s)*\\]"))) { /* Punctuations */
             char *kw = strtok((char *)line.c_str(), " []\\");
             while (kw != NULL) {
-                keywords.push_back(kw);
-                kw = strtok(NULL, " []\\");
+                punctuations.push_back(kw);
+                kw = strtok(NULL, " \\[]");
             }
         }
     }
     printf("Definitions\n");
-    for (auto const& x : regularDefinitions)
-    {
-        printf("%s : %s\n", x.first.c_str(), x.second.c_str());
+    for (int i = 0; i < regularDefinitions.size(); i++) {
+        printf("%s : %s\n", regularDefinitions[i][0].c_str(), regularDefinitions[i][1].c_str());
     }
     printf("Expressions\n");
     for (auto const& x : regularExpressions)
@@ -92,6 +88,6 @@ void parseRulesFile(ifstream &rulesFile) {
     }
     printf("Punctuations\n");
     for (int j = 0; j < punctuations.size(); ++j) {
-        printf("%s\n", punctuations.at(j));
+        printf("%s\n", punctuations.at(j).c_str());
     }
 }
