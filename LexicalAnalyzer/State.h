@@ -1,24 +1,24 @@
-#ifndef STATES_H
-#define STATES_H
+#ifndef STATE_H
+#define STATE_H
 
 #include<bits/stdc++.h>
 using namespace std;
-class States
+class State
 {
     public:
-        States();
-        virtual ~States();
+        State();
+        virtual ~State();
         void add_input(string input);
-        void add_output(States state);
+        void add_output(State state);
         vector<string> get_input();
-        vector<States> get_output();
+        vector<State> get_output();
         void setAcceptanceSate(bool status);
         bool isAcceptanceState();
         void setTokenType(string type);
         string getTokenType();
     private:
         vector<string> inputs;
-        vector<States> outputs;
+        vector<State> outputs;
         bool acceptanceState;
         string tokenType;
 };
