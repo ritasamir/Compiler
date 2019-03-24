@@ -1,16 +1,32 @@
-#ifndef NFA_H
-#define NFA_H
-#include <string>
+//
+// Created by meritv on 3/24/19.
+//
 
-class NFA
-{
-    public:
-        NFA();
-        virtual ~NFA();
-        void functionTest();
-    protected:
+#ifndef COMPILER_NFA_H
+#define COMPILER_NFA_H
 
-    private:
+
+#include "global.h"
+
+class NFA {
+public:
+    NFA() {}
+    vector<transition> getTransitions;
+    int getFinalState;
+    vector<int> getStates;
+    void addStates(int noOfStates);
+    void addTransition(int fromState, int toState, string symbol);
+    void setFinalState(int state);
+    void printTransitions();
+    int getNumberOfStates();
+    void setTokenType(string type);
+
+private:
+    vector<transition> transitions;
+    int finalState;
+    vector<int> states;
+    string tokenType;
 };
 
-#endif // NFA_H
+
+#endif //COMPILER_NFA_H

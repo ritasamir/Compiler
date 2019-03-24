@@ -17,14 +17,13 @@ void findAndReplaceAll(std::string & data, std::string toSearch, std::string rep
 {
     // Get the first occurrence
     size_t pos = data.find(toSearch);
-
     // Repeat till end is reached
     while( pos != std::string::npos)
     {
         // Replace this occurrence of Sub String
         data.replace(pos, toSearch.size(), replaceStr);
         // Get the next occurrence from the current position
-        pos =data.find(toSearch, pos + replaceStr.size());
+        pos = data.find(toSearch, pos + replaceStr.size());
     }
 }
 
@@ -35,7 +34,6 @@ void parseRulesFile(ifstream &rulesFile) {
     }
     string line;
     vector<vector<string>> regularDefinitions;
-
 
     /* TODO mention assumption in report */
     /* All regular definitions are written in the standard form of regex*/
@@ -71,6 +69,8 @@ void parseRulesFile(ifstream &rulesFile) {
                 punctuations.push_back(kw);
                 kw = strtok(NULL, " \\[]");
             }
+        } else {
+            printf("ERROR \" %s \" unknown type of tokens!\n", line);
         }
     }
     printf("Definitions\n");

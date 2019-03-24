@@ -1,65 +1,42 @@
-#include "NFA.h"
+//
+// Created by meritv on 3/24/19.
+//
+
 #include <iostream>
-#include <string.h>
-#include "global.h"
-#include "State.h"
-#include <stack>
-NFA::NFA()
-{
-    //ctor
+#include "NFA.h"
+
+void NFA::addStates(int noOfStates) {
+    int oldsize = states.size();
+    for (int i = 0; i < noOfStates; ++i) {
+        states.push_back(i + oldsize);
+    }
 }
 
-NFA::~NFA()
-{
-    //dtor
+void NFA::addTransition(int fromState, int toState, string symbol) {
+    transition trans;
+    trans.fromState = fromState;
+    trans.toState = toState;
+    trans.trans_symbol = symbol;
+    transitions.push_back(trans);
 }
-vector<State> startStates;
-State createConcatenatedStates(string kw,State s,string TokenType)
-{
-    if(kw.size()==0)
-    {
-        s.setAcceptanceSate(true);
-        s.setTokenType(TokenType);
-        return s;
-    }
-    s.add_input(string(1,kw.at(0)));
-    s.setAcceptanceSate(false);
-    kw.erase(0,1);
-    State next;
-    s.add_output(createConcatenatedStates(kw,next,TokenType));
-    return s;
-}
-void createKeywordsStates()
-{
-    for (int i = 0; i < keywords.size(); ++i)
-    {
-        State start;
-        start = createConcatenatedStates(keywords.at(i),start,keywords.at(i));
-        startStates.push_back(start);
-    }
-}
-void createPunctuationsStates(){
-    for (int i = 0; i < punctuations.size(); ++i)
-    {
-        State start;
-        start = createConcatenatedStates(punctuations.at(i),start,"punctuation");
-        startStates.push_back(start);
-    }
-}
-void NFA::functionTest()
-{
-    createKeywordsStates();
-    createPunctuationsStates();
-    for (auto & element : startStates)
-    {
-        auto & s = element;
 
-        while(!s.isAcceptanceState())
-        {
-            cout <<"transition = "<< s.get_input().at(0)<<endl;
-            s = s.get_output().at(0);
-        }
-        cout <<"Token type " <<s.getTokenType()<<endl;
-    }
+void NFA::setFinalState(int state) {
+    finalState = state;
+}
 
+void NFA::printTransitions() {
+    transition trans;
+    for(int i = 0; i < transitions.size(); i++) {
+        trans = transitions.at(i);
+        cout << "S" << trans.fromState << " --> S" << trans.toState <<" : Symbol  "<< trans.trans_symbol << endl;
+    }
+    cout<< "\n final state : S" << getFinalState << endl;
+}
+
+int NFA::getNumberOfStates() {
+    return states.size();
+}
+
+void NFA::setTokenType(string type) {
+    tokenType = type;
 }

@@ -7,6 +7,9 @@
 #include "LexicalAnalyzer.h"
 #include "LexicalRulesParser.h"
 #include "global.h"
+#include "NFA.h"
+#include "ReToNFA.h"
+#include "UnionedNFA.h"
 
 using namespace std;
 
@@ -20,4 +23,9 @@ int main(int argc,char* argv[]) {
     }
     ifstream file(argv[1]);
     parseRulesFile(file);
+    UnionedNFA unionedNFA = UnionedNFA();
+    NFA nfa = unionedNFA.getNFA();
+    vector<int> acceptanceStates = unionedNFA.getAcceptanceStates();
+    nfa.printTransitions();
+
 }

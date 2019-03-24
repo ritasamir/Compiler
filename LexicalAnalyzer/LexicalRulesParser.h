@@ -9,5 +9,4 @@
 using namespace std;
 
 void parseRulesFile(ifstream &rulesFile);
-
 #endif //COMPILERS_LEXICALRULESPARSER_H
