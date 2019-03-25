@@ -30,7 +30,7 @@ void NFA::printTransitions() {
         trans = transitions.at(i);
         cout << "S" << trans.fromState << " --> S" << trans.toState <<" : Symbol  "<< trans.trans_symbol << endl;
     }
-    cout<< "\n final state : S" << getFinalState << endl;
+    cout<< "final state : S" << getFinalState() << endl;
 }
 
 int NFA::getNumberOfStates() {
@@ -39,4 +39,12 @@ int NFA::getNumberOfStates() {
 
 void NFA::setTokenType(string type) {
     tokenType = type;
+}
+
+int NFA::getFinalState() {
+    return finalState;
+}
+
+vector<transition> NFA::getTransitions() {
+    return transitions;
 }

@@ -11,8 +11,8 @@
 class NFA {
 public:
     NFA() {}
-    vector<transition> getTransitions;
-    int getFinalState;
+    vector<transition> getTransitions();
+    int getFinalState();
     vector<int> getStates;
     void addStates(int noOfStates);
     void addTransition(int fromState, int toState, string symbol);

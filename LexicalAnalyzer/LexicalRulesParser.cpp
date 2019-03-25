@@ -64,30 +64,13 @@ void parseRulesFile(ifstream &rulesFile) {
                 kw = strtok(NULL, " {}");
             }
         } else if (regex_match(line, regex("\\[(\\s)*(\.)+(\\s)*\\]"))) { /* Punctuations */
-            char *kw = strtok((char *)line.c_str(), " []\\");
+            char *kw = strtok((char *)line.c_str(), " []");
             while (kw != NULL) {
                 punctuations.push_back(kw);
-                kw = strtok(NULL, " \\[]");
+                kw = strtok(NULL, " []");
             }
         } else {
             printf("ERROR \" %s \" unknown type of tokens!\n", line);
         }
-    }
-    printf("Definitions\n");
-    for (int i = 0; i < regularDefinitions.size(); i++) {
-        printf("%s : %s\n", regularDefinitions[i][0].c_str(), regularDefinitions[i][1].c_str());
-    }
-    printf("Expressions\n");
-    for (auto const& x : regularExpressions)
-    {
-        printf("%s : %s\n", x.first.c_str(), x.second.c_str());
-    }
-    printf("Keywords\n");
-    for (int i = 0; i < keywords.size(); ++i) {
-        printf("%s\n", keywords.at(i).c_str());
-    }
-    printf("Punctuations\n");
-    for (int j = 0; j < punctuations.size(); ++j) {
-        printf("%s\n", punctuations.at(j).c_str());
     }
 }

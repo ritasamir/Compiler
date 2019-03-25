@@ -15,15 +15,15 @@ public:
     ReToNFA() {
 
     }
-    vector<NFA> constructNFA();
+    vector<NFA*> constructNFA();
 
 private:
     void normalizeRe();
-    NFA re_to_NFA(string re, string tokenType);
-    NFA concatenate(NFA nfa1, NFA nfa2);
-    NFA kleeneClosure(NFA nfa);
-    NFA positiveClosure(NFA nfa);
-    NFA unionNFA(vector<NFA> selections, int noOfSelections);
+    NFA* re_to_NFA(string re, string tokenType);
+    NFA* concatenate(NFA *nfa1, NFA* nfa2);
+    NFA* kleeneClosure(NFA* nfa);
+    NFA* positiveClosure(NFA* nfa);
+    NFA* unionNFA(vector<NFA*> selections, int noOfSelections);
 };
 
 

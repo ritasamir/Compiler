@@ -11,10 +11,11 @@
 class UnionedNFA {
 public:
     UnionedNFA() {}
-    NFA getNFA();
+    NFA* getNFA();
     vector<int> getAcceptanceStates();
-
+    int getTotalNumberOfStates();
 private:
+    int totalNoOfStates;
     vector<int> acceptanceStates;
 };
 

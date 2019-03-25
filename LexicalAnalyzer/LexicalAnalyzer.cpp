@@ -24,8 +24,12 @@ int main(int argc,char* argv[]) {
     ifstream file(argv[1]);
     parseRulesFile(file);
     UnionedNFA unionedNFA = UnionedNFA();
-    NFA nfa = unionedNFA.getNFA();
+    NFA *nfa = unionedNFA.getNFA();
     vector<int> acceptanceStates = unionedNFA.getAcceptanceStates();
-    nfa.printTransitions();
-
+    nfa->printTransitions();
+    printf("Total number of states = %d\n", unionedNFA.getTotalNumberOfStates());
+    printf("Acceptance States:\n");
+    for (int i = 0; i < acceptanceStates.size(); ++i) {
+        printf("%d\t", acceptanceStates[i]);
+    }
 }

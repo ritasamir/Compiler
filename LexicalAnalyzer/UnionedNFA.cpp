@@ -5,28 +5,27 @@
 #include "UnionedNFA.h"
 #include "ReToNFA.h"
 
-NFA UnionedNFA::getNFA() {
+NFA* UnionedNFA::getNFA() {
     ReToNFA reToNFA;
-    vector<NFA> nfaForEachRe;
+    vector<NFA*> nfaForEachRe;
     nfaForEachRe = reToNFA.constructNFA();
-    int totalNoOfStates = 1;
+    totalNoOfStates = 1;
     for (int i = 0; i < nfaForEachRe.size(); ++i) {
-        totalNoOfStates += nfaForEachRe.at(i).getNumberOfStates();
+        totalNoOfStates += nfaForEachRe.at(i)->getNumberOfStates();
     }
-    NFA med;
-    NFA result;
-    result.addStates(totalNoOfStates);
-    result.setFinalState(totalNoOfStates - 1);
+    NFA* med;
+    NFA* result = new NFA();
+    result->addStates(totalNoOfStates);
     int tracker = 1;
     transition trans;
     for(int i = 0; i < nfaForEachRe.size(); i++) {
-        result.addTransition(0, tracker, "\\L");
+        result->addTransition(0, tracker, "\\L");
         med = nfaForEachRe.at(i);
-        for(int j = 0; j < med.getTransitions.size(); j++) {
-            trans = med.getTransitions.at(j);
-            result.addTransition(trans.fromState + tracker, trans.toState + tracker, trans.trans_symbol);
+        for(int j = 0; j < med->getTransitions().size(); j++) {
+            trans = med->getTransitions().at(j);
+            result->addTransition(trans.fromState + tracker, trans.toState + tracker, trans.trans_symbol);
         }
-        tracker += med.getNumberOfStates();
+        tracker += med->getNumberOfStates();
         acceptanceStates.push_back(tracker - 1);
     }
     return result;
@@ -34,4 +33,8 @@ NFA UnionedNFA::getNFA() {
 
 vector<int> UnionedNFA::getAcceptanceStates() {
     return acceptanceStates;
+}
+
+int UnionedNFA::getTotalNumberOfStates() {
+    return totalNoOfStates;
 }
