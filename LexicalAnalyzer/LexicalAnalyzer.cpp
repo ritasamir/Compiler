@@ -25,11 +25,11 @@ int main(int argc,char* argv[]) {
     parseRulesFile(file);
     UnionedNFA unionedNFA = UnionedNFA();
     NFA *nfa = unionedNFA.getNFA();
-    vector<int> acceptanceStates = unionedNFA.getAcceptanceStates();
+    vector<AcceptedState*> acceptanceStates = unionedNFA.getAcceptanceStates();
     nfa->printTransitions();
     printf("Total number of states = %d\n", unionedNFA.getTotalNumberOfStates());
     printf("Acceptance States:\n");
     for (int i = 0; i < acceptanceStates.size(); ++i) {
-        printf("%d\t", acceptanceStates[i]);
+        printf("S%d: %s\n", acceptanceStates[i]->getStateNum(), acceptanceStates[i]->getTokenType().c_str());
     }
 }

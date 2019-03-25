@@ -20,7 +20,7 @@ public:
     void printTransitions();
     int getNumberOfStates();
     void setTokenType(string type);
-
+    string getTokenType();
 private:
     vector<transition> transitions;
     int finalState;

@@ -15,7 +15,9 @@ vector<NFA*> ReToNFA::constructNFA() {
     }
     for (int j = 0; j < punctuations.size(); ++j) {
         NFA* nfa;
-        nfa = re_to_NFA(punctuations.at(j), punctuations.at(j));
+        string punc = punctuations.at(j);
+        punc.erase(remove(punc.begin(), punc.end(), '\\'), punc.end());
+        nfa = re_to_NFA(punctuations.at(j), punc);
         result.push_back(nfa);
     }
     map <string, string>::iterator it;

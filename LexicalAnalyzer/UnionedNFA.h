@@ -6,17 +6,21 @@
 #define COMPILER_UNIONEDNFA_H
 
 
+#include <set>
 #include "NFA.h"
+#include "AcceptedState.h"
 
 class UnionedNFA {
 public:
     UnionedNFA() {}
     NFA* getNFA();
-    vector<int> getAcceptanceStates();
+    vector<AcceptedState*> getAcceptanceStates();
     int getTotalNumberOfStates();
+    set<string> getInputs();
 private:
     int totalNoOfStates;
-    vector<int> acceptanceStates;
+    vector<AcceptedState*> acceptanceStates;
+    set<string> inputs;
 };
 
 

@@ -48,3 +48,7 @@ int NFA::getFinalState() {
 vector<transition> NFA::getTransitions() {
     return transitions;
 }
+
+string NFA::getTokenType() {
+    return tokenType;
+}
