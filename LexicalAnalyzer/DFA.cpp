@@ -15,14 +15,15 @@ DFA::DFA()
     generateDFATransitionTable();
     generateStartState();
     generateAcceptStates();
+    mapping();
 
 }
 
 //what i need
-std::vector<string> nfaStates;
-std::map<string, std::map<string, std::vector<string> > > nfaTransitionsTable;
-string nfaStartState;
-std::vector<string> nfaAcceptedStates;
+vector<int> nfaStates;
+std::map<int, std::map<string, std::vector<int> > > nfaTransitionsTable;
+int nfaStartState;
+std::vector<int> nfaAcceptedStates;
 void DFA::test()
 {
     /*
@@ -34,50 +35,50 @@ void DFA::test()
     nfaStates.push_back("F");
     nfaStates.push_back("G");
     */
- nfaStates.push_back("A");
-    nfaStates.push_back("B");
-    nfaStates.push_back("C");
-    nfaStates.push_back("D");
-   symbols.push_back("0");
+    nfaStates.push_back(1);
+    nfaStates.push_back(2);
+    nfaStates.push_back(3);
+    nfaStates.push_back(4);
+    symbols.push_back("0");
     symbols.push_back("1");
 
-    nfaStartState ="A";
-    nfaAcceptedStates.push_back("B");
-        nfaAcceptedStates.push_back("C");
+    nfaStartState =1;
+    nfaAcceptedStates.push_back(2);
+    nfaAcceptedStates.push_back(3);
 
     for(int i = 0; i < nfaStates.size(); ++i)
     {
-        nfaTransitionsTable[nfaStates[i]]["L"] = std::vector<string>();
+        nfaTransitionsTable[nfaStates[i]]["L"] = std::vector<int>();
         for(int j = 0; j < symbols.size(); ++j)
         {
-            nfaTransitionsTable[nfaStates[i]][symbols[j]] = std::vector<string>();
+            nfaTransitionsTable[nfaStates[i]][symbols[j]] = std::vector<int>();
         }
     }
-/*
-    nfaTransitionsTable["A"]["L"].push_back("B");
-    nfaTransitionsTable["A"]["L"].push_back("C");
-    nfaTransitionsTable["A"]["L"].push_back("E");
-    nfaTransitionsTable["B"]["0"].push_back("D");
-    nfaTransitionsTable["B"]["1"].push_back("D");
-    nfaTransitionsTable["B"]["L"].push_back("C");
-    nfaTransitionsTable["C"]["0"].push_back("D");
-    nfaTransitionsTable["C"]["L"].push_back("E");
-    nfaTransitionsTable["D"]["0"].push_back("E");
-    nfaTransitionsTable["D"]["1"].push_back("F");
-    nfaTransitionsTable["D"]["L"].push_back("G");
-    nfaTransitionsTable["E"]["0"].push_back("E");
-    nfaTransitionsTable["E"]["L"].push_back("B");
-    nfaTransitionsTable["F"]["1"].push_back("E");
-    nfaTransitionsTable["F"]["L"].push_back("G");
-*/
-    nfaTransitionsTable["A"]["0"].push_back("B");
-    nfaTransitionsTable["A"]["0"].push_back("C");
-    nfaTransitionsTable["B"]["1"].push_back("A");
-    nfaTransitionsTable["B"]["1"].push_back("C");
-    nfaTransitionsTable["C"]["0"].push_back("D");
-    nfaTransitionsTable["C"]["1"].push_back("D");
-    nfaTransitionsTable["D"]["0"].push_back("B");
-    nfaTransitionsTable["D"]["1"].push_back("D");
+    /*
+        nfaTransitionsTable["A"]["L"].push_back("B");
+        nfaTransitionsTable["A"]["L"].push_back("C");
+        nfaTransitionsTable["A"]["L"].push_back("E");
+        nfaTransitionsTable["B"]["0"].push_back("D");
+        nfaTransitionsTable["B"]["1"].push_back("D");
+        nfaTransitionsTable["B"]["L"].push_back("C");
+        nfaTransitionsTable["C"]["0"].push_back("D");
+        nfaTransitionsTable["C"]["L"].push_back("E");
+        nfaTransitionsTable["D"]["0"].push_back("E");
+        nfaTransitionsTable["D"]["1"].push_back("F");
+        nfaTransitionsTable["D"]["L"].push_back("G");
+        nfaTransitionsTable["E"]["0"].push_back("E");
+        nfaTransitionsTable["E"]["L"].push_back("B");
+        nfaTransitionsTable["F"]["1"].push_back("E");
+        nfaTransitionsTable["F"]["L"].push_back("G");
+    */
+    nfaTransitionsTable[1]["0"].push_back(2);
+    nfaTransitionsTable[1]["0"].push_back(3);
+    nfaTransitionsTable[2]["1"].push_back(1);
+    nfaTransitionsTable[2]["1"].push_back(3);
+    nfaTransitionsTable[3]["0"].push_back(4);
+    nfaTransitionsTable[3]["1"].push_back(4);
+    nfaTransitionsTable[4]["0"].push_back(2);
+    nfaTransitionsTable[4]["1"].push_back(4);
 
 }
 void DFA::printDFA()
@@ -166,30 +167,33 @@ void DFA::printDFA()
 
 void DFA::generateDFAStates()
 {
-    std::vector<string> container= std::vector<string>();
-    	container.push_back("deadState");
+    std::vector<int> container= std::vector<int>();
+    container.push_back(0);
 
-	dfaStates.push_back(container);
+    dfaStates.push_back(container);
 
     for(int i=0; i<nfaStates.size(); ++i)
     {
-        		container.clear();
+        container.clear();
         getEpsilonClosure(container, nfaStates[i]);
 
         if(!container.empty())
-        {    int noTransitions=0;
-        for(int j = 0; j < symbols.size(); ++j)
         {
-            if(getNextState(nfaStates[i], symbols[j]).empty()){
-                noTransitions++;
+            int noTransitions=0;
+            for(int j = 0; j < symbols.size(); ++j)
+            {
+                if(getNextState(nfaStates[i], symbols[j]).empty())
+                {
+                    noTransitions++;
+                }
             }
-        }
-        if(!(noTransitions==symbols.size() && getNextState(nfaStates[i], "L").empty())){
+            if(!(noTransitions==symbols.size() && getNextState(nfaStates[i], "L").empty()))
+            {
 
-            std::set<string> s( container.begin(), container.end() );
-            container.assign( s.begin(), s.end() );
-            addToStates(container);
-        }
+                std::set<int> s( container.begin(), container.end() );
+                container.assign( s.begin(), s.end() );
+                addToStates(container);
+            }
         }
 
         container.clear();
@@ -203,7 +207,7 @@ void DFA::generateDFAStates()
             if(!container.empty())
             {
 
-                std::set<string> s( container.begin(), container.end() );
+                std::set<int> s( container.begin(), container.end() );
                 container.assign( s.begin(), s.end() );
                 addToStates(container);
             }
@@ -226,7 +230,7 @@ void DFA::generateDFAStates()
             }
             if(!container.empty())
             {
-                std::set<string> s( container.begin(), container.end() );
+                std::set<int> s( container.begin(), container.end() );
                 container.assign( s.begin(), s.end() );
                 addToStates(container);
             }
@@ -238,7 +242,7 @@ void DFA::generateDFAStates()
 }
 
 
-void DFA::getEpsilonClosure(std::vector<string> &container, string state)
+void DFA::getEpsilonClosure(std::vector<int> &container, int state)
 {
     bool isDuplicate = false;
     container.push_back(state);
@@ -267,12 +271,12 @@ void DFA::getEpsilonClosure(std::vector<string> &container, string state)
 }
 void DFA::generateDFATransitionTable()
 {
-    std::vector<string> container;
+    std::vector<int> container;
     for(int i = 0; i < dfaStates.size(); ++i)
     {
         for(int j = 0; j < symbols.size(); ++j)
         {
-            container = std::vector<string>();
+            container = std::vector<int>();
 
             for(int k = 0; k < dfaStates[i].size(); ++k)
             {
@@ -282,12 +286,12 @@ void DFA::generateDFATransitionTable()
                     getEpsilonClosure(container, getNextState(dfaStates[i][k], symbols[j])[h]);
                 }
             }
-           if(container.empty())
+            if(container.empty())
             {
-                container.push_back("deadState");
+                container.push_back(0);
             }
 
-            std::set<string> s( container.begin(), container.end() );
+            std::set<int> s( container.begin(), container.end() );
             container.assign( s.begin(), s.end() );
             addToStates(container);
             dfaTransitionTable[dfaStates[i]][symbols[j]] = container;
@@ -297,12 +301,12 @@ void DFA::generateDFATransitionTable()
 
 
 
-std::vector<string> DFA::getNextState(string curState, string symbol)
+std::vector<int> DFA::getNextState(int curState, string symbol)
 {
     return nfaTransitionsTable[curState][symbol];
 }
 
-void DFA::addToStates(std::vector<string> &container)
+void DFA::addToStates(std::vector<int> &container)
 {
 
     for(int i = 0; i < (int)dfaStates.size(); ++i)
@@ -343,3 +347,71 @@ void DFA::generateAcceptStates()
         }
     }
 }
+void DFA::mapping()
+{
+    int i;
+    //map each vector of states to one state
+    for(i =0; i<dfaStates.size(); i++)
+    {
+        statesToInt[dfaStates[i]] = i;
+    }
+    std::map<std::vector<int>, int>::iterator it;
+    it = statesToInt.find(dfaStartState);
+    if(it != statesToInt.end())
+    {
+        startState = it ->second;
+    }
+    for(i=0; i<dfaAcceptedStates.size(); i++)
+    {
+        std::map<std::vector<int>, int>::iterator it;
+        it = statesToInt.find(dfaAcceptedStates[i]);
+        if(it != statesToInt.end())
+        {
+            acceptedStates .push_back(it ->second);
+        }
+    }
+
+    cout<<startState<<endl;
+    for(int x:acceptedStates)
+    {
+        cout<<x<<" ";
+    }
+    cout<<endl;
+
+//TODO resolve it
+    for(int i = 0; i < dfaStates.size(); ++i)
+    {
+        std::map<std::vector<int>, int>::iterator it;
+        it = statesToInt.find(dfaStates[i]);
+        int from ;
+        if(it != statesToInt.end())
+        {
+            from = it ->second;
+        }
+        for(int j = 0; j < symbols.size(); ++j)
+        {
+            std::map<std::vector<int>, int>::iterator it1;
+            it1 = statesToInt.find(dfaTransitionTable[dfaStates[i]][symbols[j]]);
+            if(it1 != statesToInt.end())
+            {
+                dfaTable[from][symbols[j]] = it1->second;
+
+            }
+        }
+
+    }
+
+for(std::map<int,std::map<std::string,int>>::iterator it = dfaTable.begin();
+    it != dfaTable.end(); ++it)
+{
+    std::cout << "start ";
+    std::map<std::string,int> var = it-> second;
+    for(std::map<std::string,int>::iterator it1 = var.begin();
+    it1 != var.end(); ++it1){
+        std::cout << it->first <<" "<<it1->first<< " "<<it1->second  << "\n";
+    }
+}
+
+
+}
+
