@@ -25,31 +25,12 @@ DFA::DFA(vector<AcceptedState*> finalStates, vector<string> inputs,vector<transi
 
     nfaStartState = 0;
     mappingTransitionTable(nfaTable);
-    /*
-    cout<<"start of transition"<<endl;
-    for(map<int,map<string,vector<int>>>::iterator it = nfaTransitionsTable.begin();
-            it != nfaTransitionsTable.end(); ++it)
-    {
-
-        map<string,vector<int>> var = it-> second;
-        for(map<string,vector<int>>::iterator it1 = var.begin();
-                it1 != var.end(); ++it1)
-        {
-            vector<int> a= it1->second;
-            for(int x:a)
-            {
-                std::cout << it->first <<" "<<it1->first<< " "<<x << "\n";
-            }
-
-        }
-    }
-    cout<<"end of transition"<<endl;
-    */
     generateDFAStates();
     generateDFATransitionTable();
     generateStartState();
     generateAcceptStates();
     mapping();
+    removeUnreachableStates();
 
 }
 
@@ -265,7 +246,6 @@ void DFA::generateAcceptStates()
 void DFA::mapping()
 {
     int i;
-    cout<<"number of dfa states " <<dfaStates.size()<<endl;
     for(i =0; i<dfaStates.size(); i++)
     {
         statesToInt[dfaStates[i]] = i;
@@ -315,21 +295,55 @@ void DFA::mapping()
         }
 
     }
+
+}
+void DFA::removeUnreachableStates()
+{
+    set<int> from;
+    set<int> to;
+    to.insert(startState);
+    for(map<int,map<string,int>>::iterator it = dfaTable.begin();
+            it != dfaTable.end(); ++it)
+    {
+        map<string,int> var = it-> second;
+        from.insert(it->first);
+
+        for(map<string,int>::iterator it1 = var.begin();
+                it1 != var.end(); ++it1)
+        {
+            to.insert(it1->second);
+
+        }
+    }
+
+    set<int> result;
+    set_difference(from.begin(), from.end(), to.begin(), to.end(),
+                   std::inserter(result, result.end()));
+    numOfDFAStates = dfaStates.size()-result.size();
+    cout<<"number of dfa states " <<numOfDFAStates<<endl;
+    for(int x: result)
+    {
+        dfaTable.erase(x);
+
+    }
     ofstream myfile;
     myfile.open ("DFATable.txt");
-    for(std::map<int,std::map<std::string,int>>::iterator it = dfaTable.begin();
+    for(map<int,map<string,int>>::iterator it = dfaTable.begin();
             it != dfaTable.end(); ++it)
     {
 
-        std::map<std::string,int> var = it-> second;
-        for(std::map<std::string,int>::iterator it1 = var.begin();
+        map<string,int> var = it-> second;
+
+        for(map<string,int>::iterator it1 = var.begin();
                 it1 != var.end(); ++it1)
         {
             // std::cout << it->first <<" "<<it1->first<< " "<<it1->second  << "\n";
             myfile<< it->first <<" "<<it1->first<< " "<<it1->second  << "\n";
+
         }
     }
     myfile.close();
+
 
 }
 map<int,map<string,int>> DFA::getDfaTable()
@@ -348,6 +362,6 @@ vector<int> DFA::getAcceptedStates()
 int DFA::getNumberOfDFAStates()
 {
 
-    return dfaStates.size();
+    return numOfDFAStates;
 }
 

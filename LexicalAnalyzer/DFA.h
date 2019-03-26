@@ -7,7 +7,6 @@
 #include "global.h"
 #define MAXSIZE   100
 #include "AcceptedState.h"
-using std::string;
 using namespace std;
 
 class DFA
@@ -20,31 +19,34 @@ public:
     vector<int> getAcceptedStates();
 
 private:
-    //nfa
+    /*NFA variables*/
     vector<int> nfaStates;
-    std::vector<int> nfaAcceptedStates;
-    std::vector<string> symbols;
+    vector<int> nfaAcceptedStates;
+    vector<string> symbols;
     int nfaStartState;
-    std::map<int, std::map<string, std::vector<int> > > nfaTransitionsTable;
-//dfa
+    map<int, map<string, vector<int> > > nfaTransitionsTable;
+    /*DFA variables*/
     map<vector<int>,map<string, vector<int> > > dfaTransitionTable;
-    std::vector<std::vector<int >> dfaStates;
-    std::vector<int> dfaStartState;
-    std::vector<std::vector<int>> dfaAcceptedStates;
-//mapping dfa
-    std::map<std::vector<int>,int> statesToInt;
-   vector<int> acceptedStates;
+    vector<vector<int >> dfaStates;
+    vector<int> dfaStartState;
+    vector<vector<int>> dfaAcceptedStates;
+    /*mapping equivalent states to one state*/
+    map<vector<int>,int> statesToInt;
+    vector<int> acceptedStates;
     int startState;
+    int numOfDFAStates;
     map<int,map<string,int>> dfaTable;
-   void mappingTransitionTable(vector<transition> nfaTable);
+    /*Methods*/
+    void mappingTransitionTable(vector<transition> nfaTable);
     void generateDFAStates();
-    void getEpsilonClosure(std::vector<int> &container, int state);
+    void getEpsilonClosure(vector<int> &container, int state);
     void generateDFATransitionTable();
-    std::vector<int> getNextState(int curState, string symbol);
+    vector<int> getNextState(int curState, string symbol);
     void generateAcceptStates();
-    void addToStates(std::vector<int> &container);
+    void addToStates(vector<int> &container);
     void generateStartState();
     void mapping();
+    void removeUnreachableStates();
 
 
 };
