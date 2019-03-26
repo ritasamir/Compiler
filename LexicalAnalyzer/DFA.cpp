@@ -320,14 +320,19 @@ void DFA::removeUnreachableStates()
     set_difference(from.begin(), from.end(), to.begin(), to.end(),
                    std::inserter(result, result.end()));
     numOfDFAStates = dfaStates.size()-result.size();
+    DFAStates = to;
+
     cout<<"number of dfa states " <<numOfDFAStates<<endl;
+    for(int x:DFAStates){
+        cout<<x<<endl;
+    }
     for(int x: result)
     {
         dfaTable.erase(x);
 
     }
     ofstream myfile;
-    myfile.open ("/home/rita/CLionProjects/LexicalAnalyzer/DFATable.txt");
+    myfile.open ("DFATable.txt");
     for(map<int,map<string,int>>::iterator it = dfaTable.begin();
             it != dfaTable.end(); ++it)
     {
@@ -363,5 +368,8 @@ int DFA::getNumberOfDFAStates()
 {
 
     return numOfDFAStates;
+}
+set<int> DFA::getDFAStates(){
+return DFAStates;
 }
 

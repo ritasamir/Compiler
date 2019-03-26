@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include "global.h"
+#include <set>
 #define MAXSIZE   100
 #include "AcceptedState.h"
 using namespace std;
@@ -15,6 +16,7 @@ public:
     DFA(vector<AcceptedState*>finalStates, vector<string> inputs, vector<transition> nfaTable);
     map<int,map<string,int>> getDfaTable();
     int getStartState();
+    set<int> getDFAStates();
     int getNumberOfDFAStates();
     vector<int> getAcceptedStates();
 
@@ -35,6 +37,7 @@ private:
     vector<int> acceptedStates;
     int startState;
     int numOfDFAStates;
+    set<int> DFAStates;
     map<int,map<string,int>> dfaTable;
     /*Methods*/
     void mappingTransitionTable(vector<transition> nfaTable);
