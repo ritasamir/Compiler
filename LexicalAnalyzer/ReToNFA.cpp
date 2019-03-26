@@ -3,6 +3,7 @@
 //
 
 #include <regex>
+#include <iostream>
 #include "ReToNFA.h"
 
 vector<NFA*> ReToNFA::constructNFA() {
@@ -33,7 +34,7 @@ void ReToNFA::normalizeRe() {
     /* TODO mention assumption that any group must be between parentheses */
     string re;
     map <string, string>::iterator it;
-    vector<char> reservedSymbols = {'L', '(', ')', '+', '*'};
+    vector<char> reservedSymbols = {'L', '(', ')', '+', '*', '?', '[', ']'};
     for (it = regularExpressions.begin(); it != regularExpressions.end(); ++it) {
         re = it->second;
         for (int i = 0; i < re.size(); ++i) {
@@ -60,7 +61,7 @@ void ReToNFA::normalizeRe() {
                 }
             } else if (re[i] == '\\' && find(reservedSymbols.begin(),
                     reservedSymbols.end(), re[i + 1]) == reservedSymbols.end()) {
-                /* preceeded by backslash but not reserved symbol */
+                /* preceded by backslash but not reserved symbol */
                 re.replace(i, 1, "");
             }
 
@@ -70,18 +71,28 @@ void ReToNFA::normalizeRe() {
 }
 
 NFA* ReToNFA::re_to_NFA(string re, string tokenType) {
-    stack<char> operators;
+    stack<char> operandsTracker;
     stack<NFA*> operands;
     char op_sym;
-    int or_count;
     string cur_sym;
-    bool prev_is_symbol = false;
+    int level = 0;
     printf("RE : %s\n", re.c_str());
     for(int i = 0; i < re.size(); ++i) {
         cur_sym = re.at(i);
         if (cur_sym != "(" && cur_sym != ")" && cur_sym != "*"
-            && cur_sym != "|" && cur_sym != "+" && cur_sym != "\\") { /* not any operation or epsilon */
-            if (prev_is_symbol) {
+            && cur_sym != "|" && cur_sym != "+") { /* symbol */
+            bool concatenated = false;
+            if (cur_sym == "\\") {
+                if (re.at(i + 1) == 'L') {cur_sym = "\\L";}
+                else if (re.at(i + 1) == '(') {cur_sym = "(";}
+                else if (re.at(i + 1) == ')') {cur_sym = ")";}
+                else if (re.at(i + 1) == '*') {cur_sym = "*";}
+                else if (re.at(i + 1) == '+') {cur_sym = "+";}
+                i++;
+            }
+            while (!operandsTracker.empty() && operandsTracker.top() == 's') {
+                concatenated = true;
+                operandsTracker.pop();
                 NFA *nfa = new NFA();
                 nfa->addStates(2);
                 nfa->setFinalState(1);
@@ -89,90 +100,87 @@ NFA* ReToNFA::re_to_NFA(string re, string tokenType) {
                 NFA *prev = operands.top();
                 operands.pop();
                 operands.push(concatenate(prev, nfa));
-            } else {
-                NFA *new_nfa;
-                new_nfa = new NFA();
-                new_nfa->addStates(2);
-                new_nfa->addTransition(0, 1, cur_sym);
-                new_nfa->setFinalState(1);
-                operands.push(new_nfa);
-                prev_is_symbol = true;
             }
-        } else {
-            prev_is_symbol = false;
-            if (cur_sym == "*") {
-                NFA *kleene_nfa = operands.top();
+            if (!concatenated) {
+                    NFA *nfa = new NFA();
+                    nfa->addStates(2);
+                    nfa->setFinalState(1);
+                    nfa->addTransition(0, 1, cur_sym);
+                    operands.push(nfa);
+            }
+            while (!operandsTracker.empty() && operandsTracker.top() == '|' && level == 0) {
+                operandsTracker.pop();
+                operandsTracker.pop();
+                NFA *nfa2 = operands.top();
                 operands.pop();
-                operands.push(kleeneClosure(kleene_nfa));
-            } else if (cur_sym == "+") {
-                NFA *positive_nfa = operands.top();
+                NFA *nfa1 = operands.top();
                 operands.pop();
-                operands.push(positiveClosure(positive_nfa));
-            } else if (cur_sym == "|") {
-                operators.push(re.at(i));
-            } else if (cur_sym == "(") {
-                operators.push(re.at(i));
-            } else if (cur_sym == "\\") {
-                if (re.at(i + 1) == 'L') {
-                    NFA *new_nfa = new NFA();
-                    new_nfa->addStates(2);
-                    new_nfa->addTransition(0, 1, re.substr(i, 1));
-                    new_nfa->setFinalState(1);
-                    operands.push(new_nfa);
-                    i++;
-                    /* TODO mention assumption that A\LB = AB */
-                } else if (re.at(i + 1) == '(') {
-                    NFA *new_nfa = new NFA();
-                    new_nfa->addStates(2);
-                    new_nfa->addTransition(0, 1, "(");
-                    new_nfa->setFinalState(1);
-                    operands.push(new_nfa);
-                    i++;
-                    prev_is_symbol = true;
-                } else if (re.at(i + 1) == ')') {
-                    NFA *new_nfa = new NFA();
-                    new_nfa->addStates(2);
-                    new_nfa->addTransition(0, 1, ")");
-                    new_nfa->setFinalState(1);
-                    operands.push(new_nfa);
-                    i++;
-                    prev_is_symbol = true;
-                } else if (re.at(i + 1) == '*') {
-                    NFA *new_nfa = new NFA();
-                    new_nfa->addStates(2);
-                    new_nfa->addTransition(0, 1, "*");
-                    new_nfa->setFinalState(1);
-                    operands.push(new_nfa);
-                    i++;
-                    prev_is_symbol = true;
-                } else if (re.at(i + 1) == '+') {
-                    NFA *new_nfa = new NFA();
-                    new_nfa->addStates(2);
-                    new_nfa->addTransition(0, 1, "+");
-                    new_nfa->setFinalState(1);
-                    operands.push(new_nfa);
-                    i++;
-                    prev_is_symbol = true;
-                }
-            } else {    /* ')' */
-                or_count = 0;
-                char c;
-                op_sym = operators.top();
-                if (op_sym == '(') {
-                    NFA *op2 = operands.top();
-                    operands.pop();
-                    NFA *op1 = operands.top();
-                    operands.pop();
-                    operands.push(concatenate(op1, op2));
-                    operators.pop();
-                    continue;
-                }
-                do {
-                    operators.pop();
-                    or_count++;
-                } while (operators.top() != '(');
-                operators.pop();
-                vector<NFA *> selections;
+                operands.push(unionNFA({nfa1, nfa2}, 2));
+            }
+            operandsTracker.push('s');
+        } else if (cur_sym == "*") {
+            operandsTracker.pop();
+            NFA *kleene_nfa = operands.top();
+            operands.pop();
+            operands.push(kleeneClosure(kleene_nfa));
+            while (!operandsTracker.empty() && operandsTracker.top() == 's') {
+                operandsTracker.pop();
+                NFA *nfa2 = operands.top();
+                operands.pop();
+                NFA *nfa1 = operands.top();
+                operands.pop();
+                operands.push(concatenate(nfa1, nfa2));
+            }
+            while (!operandsTracker.empty() && operandsTracker.top() == '|' && level == 0) {
+                operandsTracker.pop();
+                operandsTracker.pop();
+                NFA *nfa2 = operands.top();
+                operands.pop();
+                NFA *nfa1 = operands.top();
+                operands.pop();
+                operands.push(unionNFA({nfa1, nfa2}, 2));
+            }
+            operandsTracker.push('s');
+        } else if (cur_sym == "+") {
+            operandsTracker.pop(); /* s */
+            NFA *positive_nfa = operands.top();
+            operands.pop();
+            operands.push(positiveClosure(positive_nfa));
+            while (!operandsTracker.empty() && operandsTracker.top() == 's') {
+                operandsTracker.pop();
+                NFA *nfa2 = operands.top();
+                operands.pop();
+                NFA *nfa1 = operands.top();
+                operands.pop();
+                operands.push(concatenate(nfa1, nfa2));
+            }
+            while (!operandsTracker.empty() && operandsTracker.top() == '|' && level == 0) {
+                operandsTracker.pop();
+                operandsTracker.pop();
+                NFA *nfa2 = operands.top();
+                operands.pop();
+                NFA *nfa1 = operands.top();
+                operands.pop();
+                operands.push(unionNFA({nfa1, nfa2}, 2));
+            }
+            operandsTracker.push('s');
+        } else if (cur_sym == "|") {
+            operandsTracker.push(re.at(i));
+        } else if (cur_sym == "(") {
+            level++;
+            operandsTracker.push(re.at(i));
+        } else if (cur_sym == ")") {
+            int or_count = 0;
+            char c;
+            vector<NFA *> selections;
+            op_sym = operandsTracker.top();
+            while (op_sym != '(') {
+                operandsTracker.pop();
+                op_sym = operandsTracker.top();
+                if (op_sym == '|') {or_count++;}
+            }
+            operandsTracker.pop();
+            if (or_count > 0) {
                 selections.assign(or_count + 1, new NFA());
                 int tracker = or_count;
                 for (int i = 0; i < or_count + 1; i++) {
@@ -182,54 +190,50 @@ NFA* ReToNFA::re_to_NFA(string re, string tokenType) {
                 }
                 operands.push(unionNFA(selections, or_count + 1));
             }
-        }
-    }
-
-    while(!operators.empty()) {
-        int or_count = 0;
-        char op = operators.top();
-        operators.pop();
-        if (op == '(') {
-            NFA* op2 = operands.top();
-            operands.pop();
-            NFA* op1 = operands.top();
-            operands.pop();
-            operands.push(concatenate(op1, op2));
-        } else if (op == '|') {
-            or_count++;
-            while (!operators.empty() && operators.top() == '|') {
-                or_count++;
-                operators.pop();
+            level--;
+            if (i < re.size() - 1 && re.at(i + 1) != '*' && re.at(i + 1) != '+') {
+                while (!operandsTracker.empty() && operandsTracker.top() == 's') {
+                    operandsTracker.pop();
+                    NFA *nfa2 = operands.top();
+                    operands.pop();
+                    NFA *nfa1 = operands.top();
+                    operands.pop();
+                    operands.push(concatenate(nfa1, nfa2));
+                }
+                while (!operandsTracker.empty() && operandsTracker.top() == '|') {
+                    operandsTracker.pop();
+                    operandsTracker.pop();
+                    NFA *nfa2 = operands.top();
+                    operands.pop();
+                    NFA *nfa1 = operands.top();
+                    operands.pop();
+                    operands.push(unionNFA({nfa1, nfa2}, 2));
+                }
+            } else if (i == re.size() - 1){
+                while (!operandsTracker.empty() && operandsTracker.top() == 's') {
+                    operandsTracker.pop();
+                    NFA *nfa2 = operands.top();
+                    operands.pop();
+                    NFA *nfa1 = operands.top();
+                    operands.pop();
+                    operands.push(concatenate(nfa1, nfa2));
+                }
+                while (!operandsTracker.empty() && operandsTracker.top() == '|') {
+                    operandsTracker.pop();
+                    operandsTracker.pop();
+                    NFA *nfa2 = operands.top();
+                    operands.pop();
+                    NFA *nfa1 = operands.top();
+                    operands.pop();
+                    operands.push(unionNFA({nfa1, nfa2}, 2));
+                }
             }
-            vector<NFA*> temp;
-            temp.assign(or_count + 1, new NFA);
-            int tracker = or_count;
-            for (int i = 0; i < or_count + 1; i++) {
-                temp.at(tracker) = operands.top();
-                tracker--;
-                operands.pop();
-            }
-            operands.push(unionNFA(temp, or_count + 1));
+            operandsTracker.push('s');
         }
-    }
-    if (operands.size() > 1) {
-        stack<NFA*> temp;
-        while (!operands.empty()) {
-            temp.push(operands.top());
-            operands.pop();
-        }
-        while (temp.size() > 1) {
-            NFA* op2 = temp.top();
-            temp.pop();
-            NFA* op1 = temp.top();
-            temp.pop();
-            temp.push(concatenate(op1, op2));
-        }
-        operands.push(temp.top());
     }
     operands.top()->setTokenType(tokenType);
     operands.top()->printTransitions();
-    printf("number of NFA = %d\n", operands.size());
+    printf("\nnumber of NFA = %d\n", operands.size());
     return operands.top();
 }
 
