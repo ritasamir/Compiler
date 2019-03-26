@@ -16,6 +16,7 @@ public:
     DFA(vector<AcceptedState*>finalStates, vector<string> inputs, vector<transition> nfaTable);
     map<int,map<string,int>> getDfaTable();
     int getStartState();
+    int getNumberOfDFAStates();
     vector<int> getAcceptedStates();
 
 private:

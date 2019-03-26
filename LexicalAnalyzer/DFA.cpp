@@ -345,3 +345,9 @@ vector<int> DFA::getAcceptedStates()
 
     return acceptedStates;
 }
+int DFA::getNumberOfDFAStates()
+{
+
+    return dfaStates.size();
+}
+
