@@ -30,7 +30,7 @@ DFA::DFA(vector<AcceptedState*> finalStates, vector<string> inputs,vector<transi
     generateStartState();
     generateAcceptStates();
     mapping();
-  //  removeUnreachableStates();
+    removeUnreachableStates();
 
 }
 
@@ -297,9 +297,10 @@ void DFA::mapping()
     }
 
 }
-/*
+
 void DFA::removeUnreachableStates()
 {
+
     set<int> from;
     set<int> to;
     to.insert(startState);
@@ -320,16 +321,18 @@ void DFA::removeUnreachableStates()
     set<int> result;
     set_difference(from.begin(), from.end(), to.begin(), to.end(),
                    std::inserter(result, result.end()));
-    numOfDFAStates = dfaStates.size()-result.size();
-    DFAStates = to;
+    //numOfDFAStates = dfaStates.size()-result.size();
+    numOfDFAStates = dfaStates.size();
+    DFAStates = from;
 
     cout<<"number of dfa states " <<numOfDFAStates<<endl;
-
+/*
     for(int x: result)
     {
         dfaTable.erase(x);
 
     }
+    */
     ofstream myfile;
     myfile.open ("DFATable.txt");
     for(map<int,map<string,int>>::iterator it = dfaTable.begin();
@@ -350,7 +353,7 @@ void DFA::removeUnreachableStates()
 
 
 }
-*/
+
 map<int,map<string,int>> DFA::getDfaTable()
 {
     return dfaTable;
