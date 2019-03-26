@@ -9,13 +9,13 @@
 #include <map>
 #include "AcceptedState.h"
 
-#define MAXSIZE 2
 using namespace std;
 
 class Minimization {
 public:
     int nStates;    // number of states
     set<int> acceptStates;
+    set<int> allStates;
     map<int, map<string, int>> minimize (std::map<int, map<string, int>> DFA);
 
     vector<AcceptedState> getFinalAcceptedStates(vector<AcceptedState> vector);

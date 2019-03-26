@@ -61,7 +61,7 @@ set<int> Minimization :: getRestOfSet(set<int> all, set<int> s) {
 
 set<int> Minimization :: getNOTAcceptedStates() {
     set<int> notAccepted ;
-    for(int i=0;i<nStates;i++){
+    for(int i:allStates){
         if(!isContain(acceptStates,i)){
             notAccepted.insert(i);
 
@@ -79,9 +79,24 @@ map<int, map<string, int>> Minimization :: minimize (map<int, map<string, int>> 
     p0.push_back(getNOTAcceptedStates());
     p=minimizeHelper(DFA,p0);
     while(!isEqual(p,p0)){
+
+        for(set<int> i:p0){
+            for(int j:i){
+                cout<<j<<" ";
+            }
+            cout<<"s";
+        }
+        cout<<endl;
         p0=p;
         p=minimizeHelper(DFA,p);
     }
+    for(set<int> i:p){
+        for(int j:i){
+            cout<<j<<" ";
+        }
+        cout<<"s";
+    }
+    cout<<endl;
     pFinal=p;
     map<int, map<string, int>> MDFA = getMDFA(p, DFA);
     return MDFA;
