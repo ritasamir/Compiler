@@ -327,7 +327,7 @@ void DFA::removeUnreachableStates()
 
     }
     ofstream myfile;
-    myfile.open ("DFATable.txt");
+    myfile.open ("/home/rita/CLionProjects/LexicalAnalyzer/DFATable.txt");
     for(map<int,map<string,int>>::iterator it = dfaTable.begin();
             it != dfaTable.end(); ++it)
     {

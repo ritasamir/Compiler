@@ -25,12 +25,27 @@ bool Minimization :: isNotInSameSet(int i1, int i2, vector<set<int>> p) {
     return false;
 }
 
-bool Minimization :: isDistinguishable(int k, int l, int DFA[][2], vector<set<int>> p) {
-    for (int i=0;i<nInputs;i++){
-        if(isNotInSameSet(DFA[k][i], DFA[l][i], p))
+bool Minimization :: isDistinguishable(int k, int l, map<int, map<string, int>> DFA, vector<set<int>> p) {
+    map<int, map<string, int>>::iterator itr;
+    itr = DFA.find(k);
+    map<string, int> DFA1;
+    DFA1=itr->second;
+    map<int, map<string, int>>::iterator itr2;
+    itr2 = DFA.find(l);
+    map<string, int> DFA2;
+    DFA2=itr2->second;
+    map<string, int>:: iterator it2;
+    map<string, int>:: iterator it1;
+    it1=DFA1.begin();
+    it2=DFA2.begin();
+    while(it2 != DFA2.end()){
+        if(isNotInSameSet(it1->second, it2->second, p))
             return true;
+    it1++;
+    it2++;
     }
     return false;
+
 }
 
 
@@ -56,7 +71,7 @@ set<int> Minimization :: getNOTAcceptedStates() {
     return notAccepted;
 }
 
-void Minimization :: minimize (int DFA[][MAXSIZE]){
+map<int, map<string, int>> Minimization :: minimize (map<int, map<string, int>> DFA){
     //minimize the DFA
     vector<set<int>> p;
     vector<set<int>> p0;
@@ -64,21 +79,15 @@ void Minimization :: minimize (int DFA[][MAXSIZE]){
     p0.push_back(getNOTAcceptedStates());
     p=minimizeHelper(DFA,p0);
     while(!isEqual(p,p0)){
-        for (set<int> j: p) {
-            for (int l :j) {
-                cout<<l;
-            }
-            cout<<"s";
-
-        }
-        cout<<endl;
         p0=p;
         p=minimizeHelper(DFA,p);
     }
-
+    pFinal=p;
+    map<int, map<string, int>> MDFA = getMDFA(p, DFA);
+    return MDFA;
 }
 
-vector<set<int>> Minimization :: minimizeHelper(int DFA[][MAXSIZE], vector<set<int>> p0) {
+vector<set<int>> Minimization :: minimizeHelper(map<int, map<string, int>> DFA, vector<set<int>> p0) {
     vector<set<int>> p;
     for (set<int> j: p0) {
         int k = *(j.begin());
@@ -106,4 +115,64 @@ bool Minimization::isEqual(vector<set<int>> p1, vector<set<int>> p2) {
 
 
     return p1 == p2;
+}
+
+map<int, map<string, int>> Minimization::getMDFA(vector<set<int>> p, map<int, map<string, int>> DFA) {
+    map<int, map<string, int>> MDFA;
+    for (set<int> j: p) {
+       int from =*(j.begin());
+       DFA= renamDFA(DFA, from, j);
+        map<int,map<string,int>>::iterator itr;
+        itr = DFA.find(from);
+        map<string, int> m;
+        m=itr->second;
+    }
+    for (set<int> j: p) {
+        int from =*(j.begin());
+        map<int,map<string,int>>::iterator itr;
+        itr = DFA.find(from);
+        map<string, int> m;
+        m=itr->second;
+        MDFA.emplace(from,m);
+    }
+cout<<"numof final states "<<p.size()<<endl;
+    return MDFA;
+}
+
+map<int, map<string, int>> Minimization::renamDFA(map<int, map<string, int>> DFA, int from, set<int> j) {
+    map<int, map<string, int>> m;
+    map<int,map<string,int>>::iterator it;
+    for(it = DFA.begin();
+        it != DFA.end(); ++it)
+    {
+        map<string,int> var = it-> second;
+        for(std::map<std::string,int>::iterator it1 = var.begin();
+            it1 != var.end(); ++it1){
+
+            if(isContain(j,it1->second)) {
+                it1->second = from;
+            }
+        }
+        m.emplace(it->first,var);
+    }
+    return m;
+}
+
+vector<AcceptedState> Minimization::getFinalAcceptedStates(vector<AcceptedState> vec) {
+    vector<AcceptedState> a;
+    for(AcceptedState i : vec){
+        for(set<int> j : pFinal) {
+            cout <<"set ";
+            for(int k : j) {
+                cout<<k<<" ";
+                if (i.getStateNum() == k) {
+                    AcceptedState l;
+                    l.setStateNum(*(j.begin()));
+                    l.setTokenType(i.getTokenType());
+                    a.push_back(l);
+                }
+            }
+        }
+    }
+    return a;
 }

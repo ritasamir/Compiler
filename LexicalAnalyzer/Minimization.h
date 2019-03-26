@@ -6,17 +6,22 @@
 #define LEXICALANALYZER_MINIMIZATION_H
 #include <vector>
 #include<set>
+#include <map>
+#include "AcceptedState.h"
+
 #define MAXSIZE 2
 using namespace std;
 
 class Minimization {
 public:
     int nStates;    // number of states
-    int nInputs;    // number of different inputs
     set<int> acceptStates;
-    void minimize (int DFA[][MAXSIZE]);
+    map<int, map<string, int>> minimize (std::map<int, map<string, int>> DFA);
+
+    vector<AcceptedState> getFinalAcceptedStates(vector<AcceptedState> vector);
 
 private:
+    vector<set<int>> pFinal;
 
     bool isContain(set<int> vector, int i);
 
@@ -24,13 +29,17 @@ private:
 
     set<int> getRestOfSet(set<int> all, set<int> s);
 
-    bool isDistinguishable(int k, int l, int DFA[][2], vector<set<int>> vector1);
+    bool isDistinguishable(int k, int l, map<int, map<string, int>> DFA, vector<set<int>> vector1);
 
     bool isNotInSameSet(int i1, int i2, vector<set<int>> vector1);
 
-    vector<set<int>> minimizeHelper(int DFA[][MAXSIZE], vector<set<int>> p0);
+    vector<set<int>> minimizeHelper(map<int, map<string, int>> DFA, vector<set<int>> p0);
 
     bool isEqual(vector<set<int>> p1, vector<set<int>> p2);
+
+    map<int, map<string, int>> getMDFA(vector<set<int>> p, map<int, map<string, int>> map1);
+
+    map<int, map<string, int>> renamDFA(map<int, map<string, int>> map, int from, set<int> set1);
 };
 
 

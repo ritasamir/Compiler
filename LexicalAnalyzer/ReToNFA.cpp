@@ -232,7 +232,7 @@ NFA* ReToNFA::re_to_NFA(string re, string tokenType) {
         }
     }
     operands.top()->setTokenType(tokenType);
-    operands.top()->printTransitions();
+    //operands.top()->printTransitions();
     printf("\nnumber of NFA = %d\n", operands.size());
     return operands.top();
 }
