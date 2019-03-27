@@ -6,7 +6,6 @@
 #include <iostream>
 #include "global.h"
 #include <set>
-#define MAXSIZE   100
 #include "AcceptedState.h"
 using namespace std;
 

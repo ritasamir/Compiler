@@ -6,27 +6,23 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include<string.h>
+#include<conio.h>
 #include "AcceptedState.h"
-using std::string;
+#define MAXSIZE 500
 using namespace std;
 
 DFA::DFA(vector<AcceptedState*> finalStates, vector<string> inputs,vector<transition> nfaTable)
 {
-    for(int i=0; i<412; i++)
+    for(int i=0; i<MAXSIZE; i++)
     {
         nfaStates.push_back(i);
     }
     nfaAcceptedStates = finalStates;
-
-    /* for(int i=0; i<finalStates.size(); i++)
-     {
-         nfaAcceptedStates.push_back(finalStates[i]->getStateNum());
-     }
-     */
     symbols = inputs;
     symbols.erase(std::remove(symbols.begin(), symbols.end(), "\\L"), symbols.end());
-
     nfaStartState = 0;
+
     mappingTransitionTable(nfaTable);
     generateDFAStates();
     generateDFATransitionTable();
@@ -200,12 +196,12 @@ void DFA::generateDFATransitionTable()
 
 
 
-std::vector<int> DFA::getNextState(int curState, string symbol)
+vector<int> DFA::getNextState(int curState, string symbol)
 {
     return nfaTransitionsTable[curState][symbol];
 }
 
-void DFA::addToStates(std::vector<int> &container)
+void DFA::addToStates(vector<int> &container)
 {
 
     for(int i = 0; i < (int)dfaStates.size(); ++i)
@@ -222,21 +218,23 @@ void DFA::generateStartState()
 {
     getEpsilonClosure(dfaStartState, nfaStartState);
 }
+
 void DFA::generateAcceptStates()
 {
     bool acceptedState = false;
-    int numOfAcceptedStates=0;
     for(int i = 0; i < dfaStates.size(); ++i)
     {
         for(int j = 0; j < dfaStates[i].size(); ++j)
         {
             for(int k = 0; k < nfaAcceptedStates.size(); ++k)
             {
+                /*
                 if(acceptedState)
                 {
                     acceptedState = false;
                     break;
                 }
+                */
                 if(dfaStates[i][j] == nfaAcceptedStates[k]->getStateNum())
                 {
                     pair<vector<int>,string> s;
@@ -244,8 +242,8 @@ void DFA::generateAcceptStates()
                     s.second=nfaAcceptedStates[k]->getTokenType();
 
                     dfaAcceptedStates.push_back(s);
-                    acceptedState = true;
-                    break;
+                    // acceptedState = true;
+                    //break;
                 }
             }
         }
@@ -270,24 +268,46 @@ void DFA::mapping()
         it = statesToInt.find(dfaAcceptedStates[i].first);
         if(it != statesToInt.end())
         {
-            AcceptedState s;
-            cout<<it ->second<<endl;
+            bool found = false;
+            for(int j=0; j<acceptedStates.size(); j++)
+            {
+                if(acceptedStates[j].getStateNum()==it ->second)
+                {
+                    string type = acceptedStates[j].getTokenType();
+                    if((type=="id") && (type != dfaAcceptedStates[i].second)){
+                        acceptedStates[j].setTokenType(dfaAcceptedStates[i].second);
+                    }
 
-            s.setStateNum(it ->second);
+                    found = true;
+                    break;
+                }
 
-            s.setTokenType(dfaAcceptedStates[i].second);
-            acceptedStates .push_back(s);
+            }
+            if(!found)
+            {
+                AcceptedState s;
+                s.setStateNum(it ->second);
+  s.setTokenType(dfaAcceptedStates[i].second);
+                acceptedStates.push_back(s);
+            }
+
 
         }
     }
 
-    cout<<"start state "<<startState<<endl;
-    cout<<"accepted "<<endl;
-    for(AcceptedState x:acceptedStates)
-    {
-        cout<<x.getStateNum()<<" "<<x.getTokenType()<<endl;
+    cout<<"Start state: "<<startState<<endl;
+    cout<<"Accepted States: "<<endl;
+    for(int i=0;i<acceptedStates.size();i++){
+
+         cout<<acceptedStates[i].getStateNum()<<" "<<acceptedStates[i].getTokenType()<<endl;
+
+
+
     }
-    cout<<endl;
+
+
+
+
 
     for(int i = 0; i < dfaStates.size(); ++i)
     {
@@ -340,7 +360,7 @@ void DFA::removeUnreachableStates()
     numOfDFAStates = dfaStates.size();
     DFAStates = from;
 
-    cout<<"number of dfa states " <<numOfDFAStates<<endl;
+    cout<<"Number of DFA states " <<numOfDFAStates<<endl;
     /*
         for(int x: result)
         {
