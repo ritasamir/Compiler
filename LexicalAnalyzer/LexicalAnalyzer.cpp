@@ -11,6 +11,7 @@
 #include "ReToNFA.h"
 #include "UnionedNFA.h"
 #include "DFA.h"
+#include "DFA_version2.h"
 #include "Minimization.h"
 using namespace std;
 
@@ -26,12 +27,12 @@ int main(int argc,char* argv[])
     }
     ifstream file(argv[1]);
     */
-    ifstream file("/home/rita/CLionProjects/LexicalAnalyzer/lexicalRulesInput.txt");
+    ifstream file("E:/study/Compiler_Phase1/LexicalAnalyzer/lexicalRulesInput.txt");
     parseRulesFile(file);
     UnionedNFA unionedNFA = UnionedNFA();
     NFA *nfa = unionedNFA.getNFA();
     vector<AcceptedState*> acceptanceStates = unionedNFA.getAcceptanceStates();
-   // nfa->printTransitions();
+    nfa->printTransitions();
     printf("Total number of states = %d\n", unionedNFA.getTotalNumberOfStates());
     printf("Acceptance States:\n");
     for (int i = 0; i < acceptanceStates.size(); ++i)
@@ -45,8 +46,9 @@ int main(int argc,char* argv[])
     symbols.assign( inputs.begin(), inputs.end() );
 
     vector<transition> table = nfa->getTransitions();
+    DFA_version2 d = DFA_version2(acceptanceStates,symbols,table);
 
-    DFA d = DFA(acceptanceStates,symbols,table);
+//    DFA d = DFA(acceptanceStates,symbols,table);
 
     cout<<"------------------------------------------------------------"<<endl;
 
@@ -54,25 +56,29 @@ int main(int argc,char* argv[])
     Minimization min;
     min.allStates=d.getDFAStates();
     min.nStates=d.getNumberOfDFAStates();
-    for(AcceptedState a : d.getAcceptedStates()){
+    for(AcceptedState a : d.getAcceptedStates())
+    {
         acceptedStates.insert(a.getStateNum());
     }
     min.acceptStates = acceptedStates;
     min.vecOfAStates=d.getAcceptedStates();
     map<int, map<string, int>>  MDFA = min.minimize(d.getDfaTable());
     vector<AcceptedState> vec = min.getFinalAcceptedStates();
-    cout<<"final accepted states"<<endl;
-    for(AcceptedState i : vec){
-    cout<<i.getStateNum()<<" "<<i.getTokenType()<<endl;
+    cout<<"Final accepted states"<<endl;
+    for(AcceptedState i : vec)
+    {
+        cout<<i.getStateNum()<<" "<<i.getTokenType()<<endl;
     }
-
+    cout<<"Minimized final DFA table"<<endl;
     for(map<int,map<string,int>>::iterator it = MDFA.begin();
-        it != MDFA.end(); ++it)
+            it != MDFA.end(); ++it)
     {
         map<string,int> var = it-> second;
         for(std::map<std::string,int>::iterator it1 = var.begin();
-            it1 != var.end(); ++it1){
+                it1 != var.end(); ++it1)
+        {
             std::cout << it->first <<" "<<it1->first<< " "<<it1->second  << "\n";
         }
     }
+
 }
