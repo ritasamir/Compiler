@@ -16,10 +16,13 @@ DFA::DFA(vector<AcceptedState*> finalStates, vector<string> inputs,vector<transi
     {
         nfaStates.push_back(i);
     }
-    for(int i=0; i<finalStates.size(); i++)
-    {
-        nfaAcceptedStates.push_back(finalStates[i]->getStateNum());
-    }
+    nfaAcceptedStates = finalStates;
+
+    /* for(int i=0; i<finalStates.size(); i++)
+     {
+         nfaAcceptedStates.push_back(finalStates[i]->getStateNum());
+     }
+     */
     symbols = inputs;
     symbols.erase(std::remove(symbols.begin(), symbols.end(), "\\L"), symbols.end());
 
@@ -222,6 +225,7 @@ void DFA::generateStartState()
 void DFA::generateAcceptStates()
 {
     bool acceptedState = false;
+    int numOfAcceptedStates=0;
     for(int i = 0; i < dfaStates.size(); ++i)
     {
         for(int j = 0; j < dfaStates[i].size(); ++j)
@@ -233,9 +237,13 @@ void DFA::generateAcceptStates()
                     acceptedState = false;
                     break;
                 }
-                if(dfaStates[i][j] == nfaAcceptedStates[k])
+                if(dfaStates[i][j] == nfaAcceptedStates[k]->getStateNum())
                 {
-                    dfaAcceptedStates.push_back(dfaStates[i]);
+                    pair<vector<int>,string> s;
+                    s.first = dfaStates[i];
+                    s.second=nfaAcceptedStates[k]->getTokenType();
+
+                    dfaAcceptedStates.push_back(s);
                     acceptedState = true;
                     break;
                 }
@@ -259,18 +267,25 @@ void DFA::mapping()
     for(i=0; i<dfaAcceptedStates.size(); i++)
     {
         std::map<std::vector<int>, int>::iterator it;
-        it = statesToInt.find(dfaAcceptedStates[i]);
+        it = statesToInt.find(dfaAcceptedStates[i].first);
         if(it != statesToInt.end())
         {
-            acceptedStates .push_back(it ->second);
+            AcceptedState s;
+            cout<<it ->second<<endl;
+
+            s.setStateNum(it ->second);
+
+            s.setTokenType(dfaAcceptedStates[i].second);
+            acceptedStates .push_back(s);
+
         }
     }
 
     cout<<"start state "<<startState<<endl;
     cout<<"accepted "<<endl;
-    for(int x:acceptedStates)
+    for(AcceptedState x:acceptedStates)
     {
-        cout<<x<<" ";
+        cout<<x.getStateNum()<<" "<<x.getTokenType()<<endl;
     }
     cout<<endl;
 
@@ -326,13 +341,13 @@ void DFA::removeUnreachableStates()
     DFAStates = from;
 
     cout<<"number of dfa states " <<numOfDFAStates<<endl;
-/*
-    for(int x: result)
-    {
-        dfaTable.erase(x);
+    /*
+        for(int x: result)
+        {
+            dfaTable.erase(x);
 
-    }
-    */
+        }
+        */
     ofstream myfile;
     myfile.open ("DFATable.txt");
     for(map<int,map<string,int>>::iterator it = dfaTable.begin();
@@ -362,7 +377,7 @@ int DFA::getStartState()
 {
     return startState;
 }
-vector<int> DFA::getAcceptedStates()
+vector<AcceptedState> DFA::getAcceptedStates()
 {
 
     return acceptedStates;
@@ -372,7 +387,8 @@ int DFA::getNumberOfDFAStates()
 
     return numOfDFAStates;
 }
-set<int> DFA::getDFAStates(){
-return DFAStates;
+set<int> DFA::getDFAStates()
+{
+    return DFAStates;
 }
 

@@ -18,12 +18,12 @@ public:
     int getStartState();
     set<int> getDFAStates();
     int getNumberOfDFAStates();
-    vector<int> getAcceptedStates();
+    vector<AcceptedState> getAcceptedStates();
 
 private:
     /*NFA variables*/
     vector<int> nfaStates;
-    vector<int> nfaAcceptedStates;
+    vector<AcceptedState*> nfaAcceptedStates;
     vector<string> symbols;
     int nfaStartState;
     map<int, map<string, vector<int> > > nfaTransitionsTable;
@@ -31,10 +31,10 @@ private:
     map<vector<int>,map<string, vector<int> > > dfaTransitionTable;
     vector<vector<int >> dfaStates;
     vector<int> dfaStartState;
-    vector<vector<int>> dfaAcceptedStates;
+    vector<pair<vector<int>,string>> dfaAcceptedStates;
     /*mapping equivalent states to one state*/
     map<vector<int>,int> statesToInt;
-    vector<int> acceptedStates;
+    vector<AcceptedState> acceptedStates;
     int startState;
     int numOfDFAStates;
     set<int> DFAStates;
