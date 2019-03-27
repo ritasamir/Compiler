@@ -58,21 +58,28 @@ set<int> acceptStates;
 ////            it1 != var.end(); ++it1){
 ////            std::cout << i->first <<" "<<it1->first<< " "<<it1->second  << "\n";
 ////        }
-//
-//    Minimization min;
-//    min.nStates=5;
-//    min.acceptStates=acceptStates;
-//    map<int, map<string, int>>  MDFA =min.minimize(DFA);
+//    set<int> s;
+//    s.insert(0);
+//    s.insert(1);
+//    s.insert(2);
+//    s.insert(3);
+//    s.insert(4);
 //    vector<AcceptedState> ff;
 //    AcceptedState s1;
-//    s1.setStateNum(1);
+//    s1.setStateNum(0);
 //    s1.setTokenType("then");
 //    ff.push_back(s1);
 //    AcceptedState s2;
 //    s2.setStateNum(4);
 //    s2.setTokenType("else");
 //    ff.push_back(s2);
-//    vector<AcceptedState> vec = min.getFinalAcceptedStates(ff);
+//    Minimization min;
+//    min.nStates=5;
+//    min.acceptStates=acceptStates;
+//    min.vecOfAStates=ff;
+//    min.allStates=s;
+//    map<int, map<string, int>>  MDFA =min.minimize(DFA);
+//    vector<AcceptedState> vec = min.getFinalAcceptedStates();
 //    cout<<"accepted states"<<endl;
 //    for(AcceptedState i : vec){
 //    cout<<i.getStateNum()<<" "<<i.getTokenType()<<endl;

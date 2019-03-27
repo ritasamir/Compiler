@@ -7,7 +7,6 @@
 #include <fstream>
 #include <algorithm>
 #include<string.h>
-#include<conio.h>
 #include "AcceptedState.h"
 #define MAXSIZE 500
 using namespace std;

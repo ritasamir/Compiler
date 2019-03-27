@@ -16,9 +16,10 @@ public:
     int nStates;    // number of states
     set<int> acceptStates;
     set<int> allStates;
-    map<int, map<string, int>> minimize (std::map<int, map<string, int>> DFA);
+    vector<AcceptedState> vecOfAStates;
+    map<int, map<string, int>> minimize(map<int, map<string, int>> DFA);
 
-    vector<AcceptedState> getFinalAcceptedStates(vector<AcceptedState> vector);
+    vector<AcceptedState> getFinalAcceptedStates();
 
 private:
     vector<set<int>> pFinal;
@@ -40,6 +41,8 @@ private:
     map<int, map<string, int>> getMDFA(vector<set<int>> p, map<int, map<string, int>> map1);
 
     map<int, map<string, int>> renamDFA(map<int, map<string, int>> map, int from, set<int> set1);
+
+    vector<set<int>> pushAcceptedStates(vector<set<int>> p0);
 };
 
 

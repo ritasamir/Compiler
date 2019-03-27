@@ -71,32 +71,17 @@ set<int> Minimization :: getNOTAcceptedStates() {
     return notAccepted;
 }
 
-map<int, map<string, int>> Minimization :: minimize (map<int, map<string, int>> DFA){
+map<int, map<string, int>> Minimization ::minimize(map<int, map<string, int>> DFA) {
     //minimize the DFA
     vector<set<int>> p;
     vector<set<int>> p0;
-    p0.push_back(acceptStates);
+    p0=pushAcceptedStates(p0);
     p0.push_back(getNOTAcceptedStates());
     p=minimizeHelper(DFA,p0);
     while(!isEqual(p,p0)){
-
-        for(set<int> i:p0){
-            for(int j:i){
-                cout<<j<<" ";
-            }
-            cout<<"s";
-        }
-        cout<<endl;
         p0=p;
         p=minimizeHelper(DFA,p);
     }
-    for(set<int> i:p){
-        for(int j:i){
-            cout<<j<<" ";
-        }
-        cout<<"s";
-    }
-    cout<<endl;
     pFinal=p;
     map<int, map<string, int>> MDFA = getMDFA(p, DFA);
     return MDFA;
@@ -173,13 +158,11 @@ map<int, map<string, int>> Minimization::renamDFA(map<int, map<string, int>> DFA
     return m;
 }
 
-vector<AcceptedState> Minimization::getFinalAcceptedStates(vector<AcceptedState> vec) {
+vector<AcceptedState> Minimization::getFinalAcceptedStates() {
     vector<AcceptedState> a;
-    for(AcceptedState i : vec){
+    for(AcceptedState i : vecOfAStates){
         for(set<int> j : pFinal) {
-            cout <<"set ";
             for(int k : j) {
-                cout<<k<<" ";
                 if (i.getStateNum() == k) {
                     AcceptedState l;
                     l.setStateNum(*(j.begin()));
@@ -190,4 +173,24 @@ vector<AcceptedState> Minimization::getFinalAcceptedStates(vector<AcceptedState>
         }
     }
     return a;
+}
+
+vector<set<int>> Minimization::pushAcceptedStates(vector<set<int>> p0) {
+    set<int> dummy;
+    for(AcceptedState a: vecOfAStates){
+        set<int> s;
+        if(!isContain(dummy,a.getStateNum())){
+            dummy.insert(a.getStateNum());
+            s.insert(a.getStateNum());
+            for (AcceptedState b: vecOfAStates) {
+                if (!isContain(dummy, b.getStateNum()) && a.getTokenType() == b.getTokenType()) {
+                    dummy.insert(b.getStateNum());
+                    s.insert(b.getStateNum());
+                }
+            }
+            p0.push_back(s);
+        }
+
+    }
+    return p0;
 }

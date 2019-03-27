@@ -54,31 +54,17 @@ int main(int argc,char* argv[])
     Minimization min;
     min.allStates=d.getDFAStates();
     min.nStates=d.getNumberOfDFAStates();
-    for(int a : d.getAcceptedStates()){
-        acceptedStates.insert(a);
+    for(AcceptedState a : d.getAcceptedStates()){
+        acceptedStates.insert(a.getStateNum());
     }
     min.acceptStates = acceptedStates;
-//    vector<AcceptedState> ff;
-//    AcceptedState s;
-//    s.setStateNum(4);
-//    s.setTokenType("if");
-//    ff.push_back(s);
-//    AcceptedState s1;
-//    s1.setStateNum(9);
-//    s1.setTokenType("then");
-//    ff.push_back(s1);
-//    AcceptedState s2;
-//    s2.setStateNum(14);
-//    s2.setTokenType("else");
-//    ff.push_back(s2);
-
-    map<int, map<string, int>>  MDFA =min.minimize(d.getDfaTable());
-
-//    vector<AcceptedState> vec = min.getFinalAcceptedStates(ff);
-//    cout<<"accepted states"<<endl;
-//    for(AcceptedState i : vec){
-//    cout<<i.getStateNum()<<" "<<i.getTokenType()<<endl;
-//    }
+    min.vecOfAStates=d.getAcceptedStates();
+    map<int, map<string, int>>  MDFA = min.minimize(d.getDfaTable());
+    vector<AcceptedState> vec = min.getFinalAcceptedStates();
+    cout<<"final accepted states"<<endl;
+    for(AcceptedState i : vec){
+    cout<<i.getStateNum()<<" "<<i.getTokenType()<<endl;
+    }
 
     for(map<int,map<string,int>>::iterator it = MDFA.begin();
         it != MDFA.end(); ++it)

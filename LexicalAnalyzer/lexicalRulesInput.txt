@@ -1,3 +1,4 @@
 letter = [a-z A-Z]
 digit = [0 - 9]
-{ if else while }
+{if then while }
+id: letter (letterdigit)*
