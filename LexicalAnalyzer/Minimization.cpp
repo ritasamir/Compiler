@@ -122,10 +122,10 @@ map<int, map<string, int>> Minimization::getMDFA(vector<set<int>> p, map<int, ma
     for (set<int> j: p) {
        int from =*(j.begin());
        DFA= renamDFA(DFA, from, j);
-        map<int,map<string,int>>::iterator itr;
-        itr = DFA.find(from);
-        map<string, int> m;
-        m=itr->second;
+//        map<int,map<string,int>>::iterator itr;
+//        itr = DFA.find(from);
+//        map<string, int> m;
+//        m=itr->second;
     }
     for (set<int> j: p) {
         int from =*(j.begin());
@@ -135,7 +135,7 @@ map<int, map<string, int>> Minimization::getMDFA(vector<set<int>> p, map<int, ma
         m=itr->second;
         MDFA.emplace(from,m);
     }
-cout<<"numof final states "<<p.size()<<endl;
+//cout<<"numof final states "<<p.size()<<endl;
     return MDFA;
 }
 
@@ -151,6 +151,9 @@ map<int, map<string, int>> Minimization::renamDFA(map<int, map<string, int>> DFA
 
             if(isContain(j,it1->second)) {
                 it1->second = from;
+                if(initialState==it1->second){
+                    initialState=it1->second;
+                }
             }
         }
         m.emplace(it->first,var);

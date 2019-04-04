@@ -8,7 +8,6 @@
 #include <set>
 #include "AcceptedState.h"
 using namespace std;
-
 class DFA
 {
 public:
@@ -20,37 +19,29 @@ public:
     vector<AcceptedState> getAcceptedStates();
 
 private:
-    /*NFA variables*/
-    vector<int> nfaStates;
     vector<AcceptedState*> nfaAcceptedStates;
     vector<string> symbols;
-    int nfaStartState;
-    map<int, map<string, vector<int> > > nfaTransitionsTable;
-    /*DFA variables*/
-    map<vector<int>,map<string, vector<int> > > dfaTransitionTable;
-    vector<vector<int >> dfaStates;
-    vector<int> dfaStartState;
-    vector<pair<vector<int>,string>> dfaAcceptedStates;
-    /*mapping equivalent states to one state*/
+    vector<int> nfaStartState;
+    map<int, map<string, vector<int>>> nfaTransitionsTable;
+
+    map<vector<int>, bool> checked_states;
     map<vector<int>,int> statesToInt;
-    vector<AcceptedState> acceptedStates;
+    map<vector<int>,map<string, vector<int>>> dfaTransitionTable;
+    vector<pair<vector<int>,string>> dfaAcceptedStates;
+
+    vector<int> dfaStates;
+    vector<int> dfaStartState;
     int startState;
-    int numOfDFAStates;
-    set<int> DFAStates;
+    vector<AcceptedState> acceptedStates;
     map<int,map<string,int>> dfaTable;
-    /*Methods*/
+
     void mappingTransitionTable(vector<transition> nfaTable);
-    void generateDFAStates();
-    void getEpsilonClosure(vector<int> &container, int state);
-    void generateDFATransitionTable();
     vector<int> getNextState(int curState, string symbol);
+    void generateDFA();
+    bool isTransitionExist(int state, string ch);
     void generateAcceptStates();
-    void addToStates(vector<int> &container);
-    void generateStartState();
-    void mapping();
-    void removeUnreachableStates();
-
-
+    vector<int> getEpsilonClosure(vector<int> state);
+    void convertToDFA();
 };
 
-#endif // DFA_H
+#endif // DFA_VERSION2_H

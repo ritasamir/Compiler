@@ -76,7 +76,7 @@ NFA* ReToNFA::re_to_NFA(string re, string tokenType) {
     char op_sym;
     string cur_sym;
     int level = 0;
-    printf("RE : %s\n", re.c_str());
+  //  printf("RE : %s\n", re.c_str());
     for(int i = 0; i < re.size(); ++i) {
         cur_sym = re.at(i);
         if (cur_sym != "(" && cur_sym != ")" && cur_sym != "*"
@@ -233,7 +233,7 @@ NFA* ReToNFA::re_to_NFA(string re, string tokenType) {
     }
     operands.top()->setTokenType(tokenType);
     //operands.top()->printTransitions();
-    printf("\nnumber of NFA = %d\n", operands.size());
+   // printf("\nnumber of NFA = %d\n", operands.size());
     return operands.top();
 }
 

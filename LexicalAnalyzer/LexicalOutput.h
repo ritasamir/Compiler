@@ -19,7 +19,9 @@ public:
             ,int startState);
 
 private:
-    string isContain(vector<AcceptedState> vec, int i);
+    string getTokenType(vector<AcceptedState> vec, int i);
+
+    bool isAccepted(vector<AcceptedState> acceptedStates, int toState);
 };
 
 

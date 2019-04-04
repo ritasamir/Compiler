@@ -16,6 +16,7 @@ public:
     int nStates;    // number of states
     set<int> acceptStates;
     set<int> allStates;
+    int initialState;
     vector<AcceptedState> vecOfAStates;
     map<int, map<string, int>> minimize(map<int, map<string, int>> DFA);
 
