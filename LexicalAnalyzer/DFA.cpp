@@ -10,20 +10,19 @@
 #include <sstream>
 #include "AcceptedState.h"
 using namespace std;
-
+/*Constructor*/
 DFA::DFA(vector<AcceptedState*> finalStates, vector<string> inputs,vector<transition> nfaTable)
 {
     nfaAcceptedStates = finalStates;
     symbols = inputs;
     symbols.erase(std::remove(symbols.begin(), symbols.end(), "\\L"), symbols.end());
     nfaStartState.push_back(0);
-
     mappingTransitionTable(nfaTable);
     convertToDFA();
     generateAcceptStates();
     generateDFA();
 }
-
+/*Method to convert vector of NFA transitions to map of map*/
 void DFA::mappingTransitionTable(vector<transition> nfaTable)
 {
 
@@ -48,17 +47,24 @@ void DFA::mappingTransitionTable(vector<transition> nfaTable)
 
 
 }
+/*Method to generate DFA transitions from NFA transitions*/
 void DFA::convertToDFA()
 {
     queue<vector<int>> state_queue;
+    /*get epsilon closure of NFA start state and push it to the queue */
     state_queue.push( getEpsilonClosure(nfaStartState) );
+    /*mark the epsilon closure of NFA start state that is checked*/
     checked_states[getEpsilonClosure(nfaStartState)] = true;
+    /* loop on each DFA state after getting its epsilon closure and
+    find its transition with each symbol,if DFA state goes to new state
+    then get its epsilon closure, mark it and add it to the queue*/
+
     while( !state_queue.empty() )
     {
         vector<int> cur_state = state_queue.front();
         state_queue.pop();
 
-
+        /*get the next states from the current state on each symbol*/
         for(int i = 0; i < symbols.size(); i++)
         {
             set<int> next;
@@ -79,18 +85,19 @@ void DFA::convertToDFA()
                 checked_states[nextState] = true;
 
             }
-
+            /*add the new transition to the DFA transition table*/
             dfaTransitionTable[cur_state][symbols[i]] = nextState;
         }
     }
 
 
 }
-
+/*method to get the state that the given state goes to on the given symbol*/
 vector<int> DFA::getNextState(int curState, string symbol)
 {
     return nfaTransitionsTable[curState][symbol];
 }
+/*Method to get the epsilon closure of the state*/
 vector<int> DFA::getEpsilonClosure(vector<int> state)
 {
     map<int, bool> closure;
@@ -98,7 +105,7 @@ vector<int> DFA::getEpsilonClosure(vector<int> state)
     {
         closure[state[i]] = true;
     }
-
+    /*loop to get all states that the each NFA state go to on LAMDA symbol*/
     for(int i = 0; i < state.size(); i++)
     {
         if( isTransitionExist(state[i], "\\L") )
@@ -118,8 +125,7 @@ vector<int> DFA::getEpsilonClosure(vector<int> state)
     return state;
 }
 
-
-
+/*Method to check if there is transition from the given state on the given symbol*/
 bool DFA::isTransitionExist(int subState, string ch)
 {
     map<int, map<string, vector<int>>>::iterator it;
@@ -135,6 +141,7 @@ bool DFA::isTransitionExist(int subState, string ch)
     }
 
 }
+/*Method to generate Accepted states and add to it the token type that it accepts*/
 void DFA::generateAcceptStates()
 {
     for(map<vector<int>, bool>::iterator iter = checked_states.begin(); iter != checked_states.end(); iter++)
@@ -158,6 +165,7 @@ void DFA::generateAcceptStates()
         }
     }
 }
+/*Method to create the DFA transition Table*/
 void DFA::generateDFA()
 {
     int state_cnt = 0;
@@ -240,7 +248,7 @@ void DFA::generateDFA()
         }
 
     }
- ofstream myfile;
+    ofstream myfile;
     myfile.open ("DFATable.txt");
     for(map<int,map<string,int>>::iterator it = dfaTable.begin();
             it != dfaTable.end(); ++it)
@@ -252,11 +260,11 @@ void DFA::generateDFA()
                 it1 != var.end(); ++it1)
         {
             //std::cout << it->first <<" "<<it1->first<< " "<<it1->second  << "\n";
-             myfile<< it->first <<" "<<it1->first<< " "<<it1->second  << "\n";
+            myfile<< it->first <<" "<<it1->first<< " "<<it1->second  << "\n";
 
         }
     }
-        myfile.close();
+    myfile.close();
 
 }
 map<int,map<string,int>> DFA::getDfaTable()
@@ -280,7 +288,7 @@ int DFA::getNumberOfDFAStates()
 set<int> DFA::getDFAStates()
 {
     set<int> s;
-     copy( dfaStates.begin(), dfaStates.end(), std::inserter( s, s.end() ) );
+    copy( dfaStates.begin(), dfaStates.end(), std::inserter( s, s.end() ) );
 
     return s;
 }
