@@ -113,7 +113,6 @@ bool Minimization::isEqual(vector<set<int>> p1, vector<set<int>> p2) {
     if(p1.size()!=p2.size())
         return false;
 
-
     return p1 == p2;
 }
 
@@ -122,10 +121,6 @@ map<int, map<string, int>> Minimization::getMDFA(vector<set<int>> p, map<int, ma
     for (set<int> j: p) {
        int from =*(j.begin());
        DFA= renamDFA(DFA, from, j);
-//        map<int,map<string,int>>::iterator itr;
-//        itr = DFA.find(from);
-//        map<string, int> m;
-//        m=itr->second;
     }
     for (set<int> j: p) {
         int from =*(j.begin());
@@ -135,7 +130,7 @@ map<int, map<string, int>> Minimization::getMDFA(vector<set<int>> p, map<int, ma
         m=itr->second;
         MDFA.emplace(from,m);
     }
-//cout<<"numof final states "<<p.size()<<endl;
+cout<<"number of final states : "<<p.size()<<endl;
     return MDFA;
 }
 
