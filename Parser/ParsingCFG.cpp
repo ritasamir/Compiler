@@ -1,7 +1,3 @@
-//
-// Created by rita on 12/04/19.
-//
-
 #include "ParsingCFG.h"
 #include <regex>
 #include <iostream>
@@ -40,8 +36,27 @@ vector<Production> ParsingCFG::getProductions(string fileName){
             productions = addProduction(productions,lhs,rhs);
         }
     }
-    productions = eliminateLeftReccursion(productions);
-    productions = eliminateLeftFactoring(productions);
+
+    cout<<"Production : "<<endl;
+    for(Production l :  productions){
+        cout<<l.LHS<<" ---> ";
+        int i=1;
+        for(string s:l.RHS){
+            cout<<i<<"-"<<s<<" ";
+            i++;
+        }
+        cout<<endl;
+    }
+    cout<<endl;
+    cout<<"Terminals : "<<endl;
+    for(string s :terminals){
+        cout<<s<<"  ";
+    }
+    cout<<endl;
+    cout<<endl;
+    cout<<"--------------------------------------------------"<<endl;
+
+    //check mn size terminals m3 el ba2yen bs hya sa7  y3ni
     return productions;
 }
 
@@ -64,7 +79,7 @@ stack<string> ParsingCFG::parseFile(string fileName) {
             lines.push(temp);
 
         }else{
-            cout<<line<<" Error : No match"<<endl;
+            cout<<line<<" o match"<<endl;
         }
 
     }
@@ -98,94 +113,5 @@ vector<Production> ParsingCFG::addProduction(vector<Production> productions, str
         }
     productions.push_back(p);
 
-    return productions;
-}
-
-void ParsingCFG::printProductions(vector<Production> productions) {
-    cout<<"production : "<<endl;
-    for(Production l :  productions){
-        cout<<l.LHS<<" ---> ";
-        int i=1;
-        for(string s:l.RHS){
-            cout<<i<<"-"<<s<<" ";
-            i++;
-        }
-        cout<<endl;
-    }
-    cout<<"terminals : "<<endl;
-    for(string s :terminals){
-        cout<<s<<"  ";
-    }
-}
-
-vector<Production> ParsingCFG::eliminateLeftReccursion(vector<Production> productions) {
-    string lhsRec="";
-    string newNonTerminal="";
-    vector<Production> temp;
-    for(vector<Production>::iterator i = productions.begin();i !=productions.end(); ++i){
-        if((*i).LHS == (*i).RHS.at(0)){ // there exist left recursion
-            lhsRec=(*i).LHS;
-            (*i).LHS+="\\";
-            newNonTerminal=(*i).LHS;
-            (*i).RHS.erase((*i).RHS.begin());
-            (*i).RHS.push_back((*i).LHS);
-            Production newP;
-            newP.LHS=newNonTerminal;
-            newP.RHS.push_back("\\L");
-            temp.push_back(newP);
-            eliminateLeftReccursionHelper(&productions, i, newNonTerminal, lhsRec);
-        }
-    }
-    for(Production p : temp){
-        productions.push_back(p);
-    }
-
-    return productions;
-}
-
-void ParsingCFG::eliminateLeftReccursionHelper(vector<Production> *productions, vector<Production>::iterator iterator, string newNonTerminal,
-                                          string lhsRec) {
-    for(vector<Production>::iterator i = productions->begin();i !=productions->end(); ++i){
-        if((*i).LHS==lhsRec&& i!= iterator){
-            (*i).RHS.push_back(newNonTerminal);
-        }
-    }
-}
-
-vector<Production> ParsingCFG::eliminateLeftFactoring(vector<Production> productions) {
-    bool leftFactoring;
-    vector<Production> temp;
-    for(vector<Production>::iterator i = productions.begin();i !=productions.end(); ++i){
-        leftFactoring=false;
-        for(vector<Production>::iterator j = productions.begin();j !=productions.end(); ++j){
-            if((*i).LHS==(*j).LHS && (*i).RHS.at(0)==(*j).RHS.at(0)&& j!= i){
-
-                leftFactoring=true;
-                (*j).LHS+="\\";
-                if((*j).RHS.size()>1)
-                    (*j).RHS.erase((*j).RHS.begin());
-                else
-                    (*j).RHS.at(0)="\\L";
-
-
-            }
-        }
-        if(leftFactoring){
-            Production p;
-            p.LHS= (*i).LHS;
-            p.RHS.push_back((*i).RHS.at(0));
-            p.RHS.push_back((*i).LHS+"\\");
-            temp.push_back(p);
-            (*i).LHS+="\\";
-            if((*i).RHS.size()>1)
-                (*i).RHS.erase((*i).RHS.begin());
-            else
-                (*i).RHS.at(0)="\\L";
-        }
-    }
-
-    for(Production p : temp){
-        productions.push_back(p);
-    }
     return productions;
 }
