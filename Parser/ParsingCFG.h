@@ -17,6 +17,9 @@ class ParsingCFG {
 
 public:
     vector<Production> getProductions(string fileName);
+
+    string startNonTerminal;
+
     set<string> terminals;
 
     void printProductions(vector<Production> productions);
