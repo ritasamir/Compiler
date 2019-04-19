@@ -4,10 +4,11 @@
 #include "ParserTable.h"
 using namespace std;
 
-PredictiveParser::PredictiveParser(vector<Production> rules, set<string> terminals)
+PredictiveParser::PredictiveParser(vector<Production> rules, set<string> terminals, string start)
 {
     table = new ParserTable();
     productions = rules;
+    startNonTerminal = start;
     inputs = terminals;
     inputs.insert("$");
     for(int i=0; i<productions.size(); i++)
@@ -211,7 +212,7 @@ bool PredictiveParser::isContainEpsilon(string token)
 void PredictiveParser::generateFollow()
 {
 
-    startNonTerminal= productions[productions.size()-1].LHS;
+    //startNonTerminal= productions[productions.size()-1].LHS;
     followMap[startNonTerminal].insert("$");
 
     for(set<string>::iterator it = nonTerminals.begin(); it != nonTerminals.end(); it++)
@@ -248,7 +249,6 @@ void PredictiveParser::createFollowSet(string nonTerminal)
                     followSolved[nonTerminal] = true;
                     if(followMap.find(it->first) == followMap.end())  createFollowSet(it->first);
 
-                    // followSolved[nonTerminal] = false;
                     set<string> followSet= followMap[it->first];
                     for(set<string>::iterator iter = followSet.begin(); iter != followSet.end(); iter ++)
                     {
@@ -267,7 +267,6 @@ void PredictiveParser::createFollowSet(string nonTerminal)
                             {
                                 createFollowSet(production[j+1]);
                             }
-                            //       followSolved[nonTerminal] = false;
                             if(followMap[production[j+1]].empty() || dependentOn.find(production[j+1]) != dependentOn.end())
                             {
                                 dependentOn[nonTerminal].push_back(production[j+1]);

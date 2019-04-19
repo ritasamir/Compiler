@@ -7,7 +7,7 @@
 class PredictiveParser
 {
     public:
-        PredictiveParser(vector<Production> productions, set<string> terminals);
+        PredictiveParser(vector<Production> productions, set<string> terminals, string start);
         map<string, set<string>> getFirstSet();
         map<string, set<string>> getFollowSet();
         ParserTable *table;
