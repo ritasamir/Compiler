@@ -1,7 +1,3 @@
-//
-// Created by rita on 12/04/19.
-//
-
 #ifndef PARSER_PRODUCTION_H
 #define PARSER_PRODUCTION_H
 #include <vector>
@@ -9,10 +5,13 @@
 
 using namespace std;
 
-class Production {
+class Production
+{
 public:
     string LHS;
     vector<string> RHS;
+
+
 };
 
 

@@ -13,7 +13,8 @@
 using namespace std;
 
 
-class ParsingCFG {
+class ParsingCFG
+{
 
 public:
     vector<Production> getProductions(string fileName);
@@ -33,7 +34,7 @@ private:
     vector<Production> eliminateLeftReccursion(vector<Production> productions);
 
     void eliminateLeftReccursionHelper(vector<Production> *productions, vector<Production>::iterator iterator, string basicString,
-                                                     string string1);
+                                       string string1);
 
     vector<Production> eliminateLeftFactoring(vector<Production> productions);
 };

@@ -6,34 +6,36 @@
 #include <set>
 class PredictiveParser
 {
-    public:
-        PredictiveParser(vector<Production> productions, set<string> terminals, string start);
-        map<string, set<string>> getFirstSet();
-        map<string, set<string>> getFollowSet();
-        ParserTable *table;
+public:
+    PredictiveParser(vector<Production> productions, set<string> terminals, string start);
+    map<string, set<string>> getFirstSet();
+    map<string, set<string>> getFollowSet();
+    ParserTable *table;
+    set<string> get_terminals();
+    set<string> get_nonTerminals();
 
-    private:
+private:
 
-        bool isContainEpsilon(string token);
-        void generateFirst();
-        void createFirstSet(string nonTerminal);
-        bool isNonTerminal(string p);
-        void generateFollow();
-        void createFollowSet(string nonTerminal);
-        void addDependencies();
-        bool isHasEpsilon(string nonTerminal);
-        void constructParserTable();
+    bool isContainEpsilon(string token);
+    void generateFirst();
+    void createFirstSet(string nonTerminal);
+    bool isNonTerminal(string p);
+    void generateFollow();
+    void createFollowSet(string nonTerminal);
+    void addDependencies();
+    bool isHasEpsilon(string nonTerminal);
+    void constructParserTable();
 
-        vector<string> hasEpsilon;
-        vector<Production> productions;
-        map<string, vector<vector<string>>> mergedProductions;
-        set<string> nonTerminals;
-        set<string> inputs;
-        string startNonTerminal;
-        map<string, set<string>> firstMap;
-        map<string, set<string>> followMap;
-        map<string,vector<string>> dependentOn;
-        map<string, bool> followSolved;
+    vector<string> hasEpsilon;
+    vector<Production> productions;
+    map<string, vector<vector<string>>> mergedProductions;
+    set<string> nonTerminals;
+    set<string> inputs;
+    string startNonTerminal;
+    map<string, set<string>> firstMap;
+    map<string, set<string>> followMap;
+    map<string,vector<string>> dependentOn;
+    map<string, bool> followSolved;
 };
 
 #endif // PREDICTIVEPARSER_H

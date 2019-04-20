@@ -409,3 +409,11 @@ map<string, set<string>> PredictiveParser::getFollowSet()
 {
     return followMap;
 }
+set<string> PredictiveParser::get_terminals()
+{
+    return inputs;
+}
+set<string> PredictiveParser::get_nonTerminals()
+{
+    return nonTerminals;
+}

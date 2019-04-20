@@ -9,7 +9,8 @@
 
 using namespace std;
 
-vector<Production> ParsingCFG::getProductions(string fileName){
+vector<Production> ParsingCFG::getProductions(string fileName)
+{
 
     stack<string> lines = parseFile(fileName);
     vector<Production> productions;
@@ -24,20 +25,26 @@ vector<Production> ParsingCFG::getProductions(string fileName){
         rhs="";
         lhs="";
         int i=1;
-        while(line.at(i)!='='){
+        while(line.at(i)!='=')
+        {
             if(line.at(i)!=' ')
                 lhs+=line.at(i);
             i++;
         }
-        for(int j=i+1;j<line.size();j++) { //assuming no space bteween one production
-            if(line.at(j)=='|') {
+        for(int j=i+1; j<line.size(); j++) //assuming no space bteween one production
+        {
+            if(line.at(j)=='|')
+            {
                 productions= addProduction(productions,lhs,rhs);
                 rhs="";
-            }else {
+            }
+            else
+            {
                 rhs+=string(1, line.at(j));
             }
         }
-        if(rhs!="") {
+        if(rhs!="")
+        {
             productions = addProduction(productions,lhs,rhs);
         }
     }
@@ -48,23 +55,32 @@ vector<Production> ParsingCFG::getProductions(string fileName){
     return productions;
 }
 
-stack<string> ParsingCFG::parseFile(string fileName) {
+stack<string> ParsingCFG::parseFile(string fileName)
+{
     ifstream file(fileName);
     string line;
     stack<string> lines;
-    while (getline(file, line)) {
-        if ( regex_match(line, regex("^#(\\s)*([a-zA-Z0-9_]+)(\\s)*=(\\s)*[\\x00-\\x7B}~]+")) ) {
+    while (getline(file, line))
+    {
+        if ( regex_match(line, regex("^#(\\s)*([a-zA-Z0-9_]+)(\\s)*=(\\s)*[\\x00-\\x7B}~]+")) )
+        {
             lines.push(line);
 
-        }else if(regex_match(line, regex("^#(\\s)*([a-zA-Z0-9_]+)(\\s)*=(\\s)*[\\x00-\\x7F]+"))){
+        }
+        else if(regex_match(line, regex("^#(\\s)*([a-zA-Z0-9_]+)(\\s)*=(\\s)*[\\x00-\\x7F]+")))
+        {
             lines.push(line);
-        }else if(regex_match(line, regex("^[\\x00-\\x7F]+"))) {
+        }
+        else if(regex_match(line, regex("^[\\x00-\\x7F]+")))
+        {
             string temp = lines.top();
             lines.pop();
             temp+=line;
             lines.push(temp);
 
-        }else{
+        }
+        else
+        {
             cout<<line<<" Error : No match"<<endl;
         }
 
@@ -72,61 +88,77 @@ stack<string> ParsingCFG::parseFile(string fileName) {
     return lines;
 }
 
-vector<Production> ParsingCFG::addProduction(vector<Production> productions, string lhs, string rhs) {
+vector<Production> ParsingCFG::addProduction(vector<Production> productions, string lhs, string rhs)
+{
     Production p;
     p.LHS=lhs;
     string noTerminal="";
-    for(int i=0;i<rhs.size();i++){
-        if(rhs.at(i)=='\''){
+    for(int i=0; i<rhs.size(); i++)
+    {
+        if(rhs.at(i)=='\'')
+        {
             i++;
             string str= string(1, rhs.at(i++));
-            while(rhs.at(i)!='\''){//assume char ' not considered as terminal //assume space between each terminal or not terminal
+            while(rhs.at(i)!='\'') //assume char ' not considered as terminal //assume space between each terminal or not terminal
+            {
                 str+=string(1, rhs.at(i));
                 i++;
-                }
-               terminals.insert(str);
-               p.RHS.push_back(str);
-        }else if (rhs.at(i)==' '&&noTerminal!=""){
+            }
+            terminals.insert(str);
+            p.RHS.push_back(str);
+        }
+        else if (rhs.at(i)==' '&&noTerminal!="")
+        {
             p.RHS.push_back(noTerminal);
             noTerminal="";
-        }else{
+        }
+        else
+        {
             if(rhs.at(i)!=' ')
                 noTerminal+=string(1, rhs.at(i));
-            }
         }
-        if(noTerminal!=""){
-            p.RHS.push_back(noTerminal);
-        }
+    }
+    if(noTerminal!="")
+    {
+        p.RHS.push_back(noTerminal);
+    }
     productions.push_back(p);
 
     return productions;
 }
 
-void ParsingCFG::printProductions(vector<Production> productions) {
+void ParsingCFG::printProductions(vector<Production> productions)
+{
     cout<<"production : "<<endl;
-    for(Production l :  productions){
+    for(Production l :  productions)
+    {
         cout<<l.LHS<<" ---> ";
         int i=1;
-        for(string s:l.RHS){
+        for(string s:l.RHS)
+        {
             cout<<i<<"-"<<s<<" ";
             i++;
         }
         cout<<endl;
     }
     cout<<"terminals : "<<endl;
-    for(string s :terminals){
+    for(string s :terminals)
+    {
         cout<<s<<"  ";
     }
     cout<<endl;
     cout<<"Starting NonTerminal : "<<startNonTerminal<<endl;
 }
 
-vector<Production> ParsingCFG::eliminateLeftReccursion(vector<Production> productions) {
+vector<Production> ParsingCFG::eliminateLeftReccursion(vector<Production> productions)
+{
     string lhsRec="";
     string newNonTerminal="";
     vector<Production> temp;
-    for(vector<Production>::iterator i = productions.begin();i !=productions.end(); ++i){
-        if((*i).LHS == (*i).RHS.at(0)){ // there exist left recursion
+    for(vector<Production>::iterator i = productions.begin(); i !=productions.end(); ++i)
+    {
+        if((*i).LHS == (*i).RHS.at(0))  // there exist left recursion
+        {
             lhsRec=(*i).LHS;
             (*i).LHS+="\\";
             newNonTerminal=(*i).LHS;
@@ -139,7 +171,8 @@ vector<Production> ParsingCFG::eliminateLeftReccursion(vector<Production> produc
             eliminateLeftReccursionHelper(&productions, i, newNonTerminal, lhsRec);
         }
     }
-    for(Production p : temp){
+    for(Production p : temp)
+    {
         productions.push_back(p);
     }
 
@@ -147,21 +180,28 @@ vector<Production> ParsingCFG::eliminateLeftReccursion(vector<Production> produc
 }
 
 void ParsingCFG::eliminateLeftReccursionHelper(vector<Production> *productions, vector<Production>::iterator iterator, string newNonTerminal,
-                                          string lhsRec) {
-    for(vector<Production>::iterator i = productions->begin();i !=productions->end(); ++i){
-        if((*i).LHS==lhsRec&& i!= iterator){
+        string lhsRec)
+{
+    for(vector<Production>::iterator i = productions->begin(); i !=productions->end(); ++i)
+    {
+        if((*i).LHS==lhsRec&& i!= iterator)
+        {
             (*i).RHS.push_back(newNonTerminal);
         }
     }
 }
 
-vector<Production> ParsingCFG::eliminateLeftFactoring(vector<Production> productions) {
+vector<Production> ParsingCFG::eliminateLeftFactoring(vector<Production> productions)
+{
     bool leftFactoring;
     vector<Production> temp;
-    for(vector<Production>::iterator i = productions.begin();i !=productions.end(); ++i){
+    for(vector<Production>::iterator i = productions.begin(); i !=productions.end(); ++i)
+    {
         leftFactoring=false;
-        for(vector<Production>::iterator j = productions.begin();j !=productions.end(); ++j){
-            if((*i).LHS==(*j).LHS && (*i).RHS.at(0)==(*j).RHS.at(0)&& j!= i){
+        for(vector<Production>::iterator j = productions.begin(); j !=productions.end(); ++j)
+        {
+            if((*i).LHS==(*j).LHS && (*i).RHS.at(0)==(*j).RHS.at(0)&& j!= i)
+            {
 
                 leftFactoring=true;
                 (*j).LHS+="\\";
@@ -173,7 +213,8 @@ vector<Production> ParsingCFG::eliminateLeftFactoring(vector<Production> product
 
             }
         }
-        if(leftFactoring){
+        if(leftFactoring)
+        {
             Production p;
             p.LHS= (*i).LHS;
             p.RHS.push_back((*i).RHS.at(0));
@@ -187,7 +228,8 @@ vector<Production> ParsingCFG::eliminateLeftFactoring(vector<Production> product
         }
     }
 
-    for(Production p : temp){
+    for(Production p : temp)
+    {
         productions.push_back(p);
     }
     return productions;

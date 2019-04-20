@@ -40,3 +40,7 @@ void ParserTable::printTable()
     }
 
 }
+map<string, map<string,vector<string>>> ParserTable::getTable()
+{
+    return parserTable;
+}

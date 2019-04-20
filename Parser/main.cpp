@@ -5,12 +5,20 @@
 #include "Production.h"
 #include "PredictiveParser.h"
 #include "ParserTable.h"
-int main() {
+#include "LeftDerivation.h"
+int main()
+{
     ParsingCFG p ;
     vector<Production> productions;
-    productions=p.getProductions("E:/study/Parser/CFG.txt");
+    set<string> b= p.terminals;
+    productions=p.getProductions("C:/Users/omid/Desktop/Parser/CFG.txt");
     PredictiveParser predictiveParser =  PredictiveParser(productions, p.terminals,p.startNonTerminal);
     ParserTable *table = predictiveParser.table;
     table->printTable();
+    LeftDerivation l;
+    l.set_terminals(predictiveParser.get_terminals());
+    l.set_nonTerminals(predictiveParser.get_nonTerminals());
+    l.derive(table->getTable(),p.startNonTerminal);
+
     return 0;
 }
