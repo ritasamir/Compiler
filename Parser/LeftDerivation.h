@@ -8,11 +8,13 @@
 #include <string>
 #include <set>
 #include <fstream>
+#include <Token.h>
+
 using namespace std;
 class LeftDerivation
 {
 public:
-    void derive(map<string, map<string,vector<string>>> table, string start);
+    void derive(map<string, map<string,vector<string>>> table, string start, vector<token> input);
     void set_terminals(set<string> input);
     void set_nonTerminals(set<string> input);
     bool is_terminal(string token);

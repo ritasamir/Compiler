@@ -33,37 +33,37 @@ PredictiveParser::PredictiveParser(vector<Production> rules, set<string> termina
     generateFirst();
     cout<<endl;
 
-    cout<<"-----------------------FIRST-----------------------"<<endl;
-    for (map<string, set<string>>::iterator it = firstMap.begin(); it != firstMap.end(); ++it)
-    {
-        set<string> set = it->second;
-
-        cout << "non terminal: " << it->first <<"  "<<set.size()<< endl;
-        std::set<string>::iterator iter;
-        for (iter = set.begin(); iter != set.end(); ++iter)
-        {
-            cout << *iter << '\t';
-        }
-        cout << endl;
-    }
-    cout<<endl;
+//    cout<<"-----------------------FIRST-----------------------"<<endl;
+//    for (map<string, set<string>>::iterator it = firstMap.begin(); it != firstMap.end(); ++it)
+//    {
+//        set<string> set = it->second;
+//
+//        cout << "non terminal: " << it->first <<"  "<<set.size()<< endl;
+//        std::set<string>::iterator iter;
+//        for (iter = set.begin(); iter != set.end(); ++iter)
+//        {
+//            cout << *iter << '\t';
+//        }
+//        cout << endl;
+//    }
+//    cout<<endl;
 
     generateFollow();
     addDependencies();
-    cout << "-----------------------FOLLOW--------------------" << endl;
-    for (map<string, set<string>>::iterator it = followMap.begin(); it != followMap.end(); ++it)
-    {
-        set<string> set = it->second;
-
-        cout << "non terminal: " << it->first << endl;
-        std::set<string>::iterator iter;
-        for (iter = set.begin(); iter != set.end(); ++iter)
-        {
-            cout << *iter << '\t';
-        }
-        cout << endl;
-    }
-    cout<<"--------------------------------------------------"<<endl;
+//    cout << "-----------------------FOLLOW--------------------" << endl;
+//    for (map<string, set<string>>::iterator it = followMap.begin(); it != followMap.end(); ++it)
+//    {
+//        set<string> set = it->second;
+//
+//        cout << "non terminal: " << it->first << endl;
+//        std::set<string>::iterator iter;
+//        for (iter = set.begin(); iter != set.end(); ++iter)
+//        {
+//            cout << *iter << '\t';
+//        }
+//        cout << endl;
+//    }
+//    cout<<"--------------------------------------------------"<<endl;
 
     constructParserTable();
 }

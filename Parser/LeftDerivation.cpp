@@ -2,40 +2,37 @@
 #include <stack>
 
 
-void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable, string start)
+void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable, string start, vector<token> input)
 {
     ofstream outfile;
-    outfile.open("C:/Users/omid/Desktop/Parser/derivationOutput.txt", ios::out);
-    string input = "ceadb";
-    bool terminal;
-    input.push_back('$');
-    stack<string> v;
+    outfile.open("derivationOutput.txt",  std::ios_base::app);
+    input.push_back({"$", "$"});
+    stack<string> stack;
     vector<string> print_vector;
-    v.push("$");
-    v.push(start);
-    print_vector.push_back("$");
+    stack.push("$");
+    stack.push(start);
+    print_vector.emplace_back("$");
     print_vector.push_back(start);
-    outfile << "$";
     outfile << start << endl;
     int i = 0;
     auto print_vector_it  = ++print_vector.begin();
-    while(!v.empty())
+    while(!stack.empty())
     {
         if(i >= input.size())
         {
-            outfile << "error: input ended but stack didn't" << endl;
+            outfile << "error: input ended but not accepted" << endl;
             break;
         }
-        if(!is_terminal(string(1,input[i])))
+        if(!is_terminal(input[i].TokenType))
         {
-            outfile << "undefined terminal" << endl;
+            outfile << "error: undefined terminal, discard input" << endl;
             break;
         }
         else
         {
-            if(is_nonTerminal(v.top()))
+            if(is_nonTerminal(stack.top()))
             {
-                vector<string> prod = (parserTable[v.top()])[string(1,input[i])];
+                vector<string> prod = (parserTable[stack.top()])[input[i].TokenType];
 
                 if(prod.at(0) == "error")
                 {
@@ -43,19 +40,19 @@ void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable,
                     //remove input
                     i++;
                 }
-                else if(prod.at(0) == "sync")
+                else if(prod.at(0) == "synch")
                 {
-                    outfile << "error: sync cell the letter is in the follow set";
-                    v.pop();
+                    outfile << "synch cell the letter is in the follow set" << endl;
+                    stack.pop();
                     print_vector.erase(print_vector_it);
                     for (auto j = print_vector.begin(); j != print_vector.end(); j++)
                     {
-                        outfile << *j;
+                        outfile << *j << " ";
                     }
                 }
                 else if(prod.at(0) == "\\L")
                 {
-                    v.pop();
+                    stack.pop();
 
                     while(!is_nonTerminal(*print_vector_it))
                     {
@@ -64,26 +61,26 @@ void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable,
                     print_vector.erase(print_vector_it);
                     for (auto j = print_vector.begin(); j != print_vector.end(); j++)
                     {
-                        outfile << *j;
+                        outfile << *j << " ";
                     }
                     outfile << "\n";
                 }
                 else
                 {
-                    v.pop();
+                    stack.pop();
                     //   cout << "print before erase "<<*print_vector_it << endl;
                     print_vector.erase(print_vector_it);
                     //   cout << "print after erase "<<*print_vector_it << endl;
                     for (auto j = prod.rbegin(); j != prod.rend(); j++)
                     {
-                        v.push(*j);
+                        stack.push(*j);
                     }
                     print_vector.insert(print_vector_it, prod.begin(),prod.end());
                     print_vector_it = find(print_vector.begin(),print_vector.end(),*prod.begin());
                     //   cout << "print after insert "<<*print_vector_it << endl;
                     for (auto j = print_vector.begin(); j != print_vector.end(); j++)
                     {
-                        outfile << *j;
+                        outfile << *j << " ";
                     }
                     outfile << "\n";
                     //  cout << "\n";
@@ -91,34 +88,36 @@ void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable,
             }
             else
             {
-                if(is_terminal(v.top()))
+                if(is_terminal(stack.top()))
                 {
-                    if(v.top() == string(1,input[i]))
+                    if(stack.top() == input[i].TokenType)
                     {
                         i++;
-                        //     cout << "match " << v.top() << endl;
+                        //     cout << "match " << stack.top() << endl;
                         print_vector_it++;
                         //  cout << "print it "<<*print_vector_it << endl;
                     }
                     else
                     {
-                        outfile << "error: non matching terminals, missing terminal" << endl;
+                        outfile << "error: non matching terminals, missing terminal " << stack.top() << endl;
                         print_vector.erase(print_vector_it);
                         for (auto j = print_vector.begin(); j != print_vector.end(); j++)
                         {
-                            outfile << *j;
+                            outfile << *j << " ";
                         }
                         outfile << "\n";
                     }
-                    v.pop();
+                    stack.pop();
                 }
             }
         }
 
     }
-    if(v.empty() && i < input.size())
+    if(stack.empty() && i < input.size())
     {
         outfile << "error: stack ended but input didn't" << endl;
+    } else {
+        outfile << "accept\n";
     }
     outfile.close();
 
@@ -133,7 +132,7 @@ void LeftDerivation::set_nonTerminals(set<string> input)
 }
 bool LeftDerivation::is_terminal(string token)
 {
-    return terminals.find(token)!= terminals.end();
+    return terminals.find(token)!= terminals.end() || token == "$";
 }
 bool LeftDerivation::is_nonTerminal(string token)
 {
