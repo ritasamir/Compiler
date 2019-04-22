@@ -13,6 +13,7 @@ void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable,
     stack.push(start);
     print_vector.emplace_back("$");
     print_vector.push_back(start);
+    outfile << "$ ";
     outfile << start << endl;
     int i = 0;
     auto print_vector_it  = ++print_vector.begin();
