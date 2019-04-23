@@ -54,7 +54,6 @@ void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable,
                 else if(prod.at(0) == "\\L")
                 {
                     stack.pop();
-
                     while(!is_nonTerminal(*print_vector_it))
                     {
                         print_vector_it++;
@@ -69,7 +68,7 @@ void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable,
                 else
                 {
                     stack.pop();
-                    //   cout << "print before erase "<<*print_vector_it << endl;
+                       cout << "print before erase "<<*print_vector_it << endl;
                     print_vector.erase(print_vector_it);
                     //   cout << "print after erase "<<*print_vector_it << endl;
                     for (auto j = prod.rbegin(); j != prod.rend(); j++)
@@ -77,14 +76,26 @@ void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable,
                         stack.push(*j);
                     }
                     print_vector.insert(print_vector_it, prod.begin(),prod.end());
-                    print_vector_it = find(print_vector.begin(),print_vector.end(),*prod.begin());
-                    //   cout << "print after insert "<<*print_vector_it << endl;
+                    string first_element = *prod.begin();
+                    for(auto j = print_vector.begin();j!= print_vector.end();j++){
+                        if((*j) == first_element){
+                            print_vector_it = j;
+
+                        }
+                    }
+                    //print_vector_it = std::find(print_vector.rbegin(),print_vector.rend(),*prod.begin());
+                   // cout << "print after insert "<<*print_vector_it << endl;
+
                     for (auto j = print_vector.begin(); j != print_vector.end(); j++)
                     {
                         outfile << *j << " ";
                     }
+                    for (auto j = print_vector.begin(); j != print_vector.end(); j++)
+                    {
+                        cout << *j << " ";
+                    }
                     outfile << "\n";
-                    //  cout << "\n";
+                      cout << "\n";
                 }
             }
             else
@@ -94,9 +105,9 @@ void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable,
                     if(stack.top() == input[i].TokenType)
                     {
                         i++;
-                        //     cout << "match " << stack.top() << endl;
                         print_vector_it++;
-                        //  cout << "print it "<<*print_vector_it << endl;
+                      //cout << "print it "<<*print_vector_it << endl;
+
                     }
                     else
                     {
