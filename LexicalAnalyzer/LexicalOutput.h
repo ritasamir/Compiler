@@ -15,7 +15,7 @@ using namespace std;
 class LexicalOutput {
 
 public:
-    vector <token> getTokens(string file, map<int, map<string, int>> MDFA,vector<AcceptedState> acceptedStates
+    vector <token> getTokens(string line, map<int, map<string, int>> MDFA,vector<AcceptedState> acceptedStates
             ,int startState);
 
 private:

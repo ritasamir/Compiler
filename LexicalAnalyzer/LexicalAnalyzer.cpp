@@ -75,12 +75,6 @@ int main(int argc,char* argv[])
     vector<token> tokens;
 //    string f="/home/rita/CLionProjects/Phase_1/TestProgram.txt";
 //    tokens = lex.getTokens(f,MDFA,vec,min.initialState);
-    tokens = lex.getTokens(argv[2],MDFA,vec,min.initialState);
-    cout<<"----------------------------------------------------------------"<<endl;
-    for(auto &i : tokens){
-        cout<<i.TokenType<<"              "<<i.lexme<<endl;
-        if (i.TokenType == "assign") {i.TokenType = "=";}
-    }
     ParsingCFG p ;
     vector<Production> productions;
     set<string> b= p.terminals;
@@ -88,11 +82,22 @@ int main(int argc,char* argv[])
     PredictiveParser predictiveParser =  PredictiveParser(productions, p.terminals,p.startNonTerminal);
     ParserTable *table1 = predictiveParser.table;
     table1->printTable();
+    cout << endl;
     ifstream f("derivationOutput.txt", ios::out | ios::trunc);
     f.close();
     LeftDerivation l;
     l.set_terminals(predictiveParser.get_terminals());
     l.set_nonTerminals(predictiveParser.get_nonTerminals());
-    l.derive(table1->getTable(),p.startNonTerminal, tokens);
-
+    ifstream sourceProg(argv[2], fstream::in);
+    string line;
+    while (getline(sourceProg, line)) {
+        printf("Line to be analyzed: ");
+        tokens = lex.getTokens(line,MDFA,vec,min.initialState);
+        for(auto &i : tokens){
+            cout<<i.TokenType<<"              "<<i.lexme<<endl;
+            if (i.TokenType == "assign") {i.TokenType = "=";}
+        }
+        l.derive(table1->getTable(),p.startNonTerminal, tokens);
+        cout<<"----------------------------------------------------------------"<<endl;
+    }
 }

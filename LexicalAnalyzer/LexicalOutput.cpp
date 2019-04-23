@@ -2,23 +2,25 @@
 
 using namespace std;
 
-vector <token> LexicalOutput::getTokens(string file, map<int, map<string, int>> MDFA,vector<AcceptedState> acceptedStates
+vector <token> LexicalOutput::getTokens(string line, map<int, map<string, int>> MDFA,vector<AcceptedState> acceptedStates
                                         ,int startState)
 {
     vector<token> allTokens;
     char ch;
-    fstream fin(file, fstream::in);
+    //fstream fin(file, fstream::in);
     int fromState = startState;
     string tokenType = "";
     string lexme = "";
     string testProgram = "";
     int progSize = 0;
 
-    while (fin >> noskipws >> ch)
-    {
-        testProgram += ch;
-        progSize++;
-    }
+//    while (fin >> noskipws >> ch)
+//    {
+//        testProgram += ch;
+//        progSize++;
+//    }
+    testProgram = line;
+    progSize = line.size();
     int count = 0;
     char c = testProgram.at(count);
     cout<<testProgram<<endl;
@@ -59,7 +61,8 @@ vector <token> LexicalOutput::getTokens(string file, map<int, map<string, int>> 
             }
             else
             {
-                cout << "No such symbol "<<c<<" exist in the input!"<<endl;
+                printf("No such symbol %c exist in the input!\n", c);
+                //cout << "No such symbol "<<c<<" exist in the input!"<<endl;
                 count++;
             }
         }

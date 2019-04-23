@@ -68,7 +68,6 @@ void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable,
                 else
                 {
                     stack.pop();
-                       cout << "print before erase "<<*print_vector_it << endl;
                     print_vector.erase(print_vector_it);
                     //   cout << "print after erase "<<*print_vector_it << endl;
                     for (auto j = prod.rbegin(); j != prod.rend(); j++)
@@ -90,12 +89,7 @@ void LeftDerivation::derive(map<string, map<string,vector<string>>> parserTable,
                     {
                         outfile << *j << " ";
                     }
-                    for (auto j = print_vector.begin(); j != print_vector.end(); j++)
-                    {
-                        cout << *j << " ";
-                    }
                     outfile << "\n";
-                      cout << "\n";
                 }
             }
             else
