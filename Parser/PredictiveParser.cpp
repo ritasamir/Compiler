@@ -30,40 +30,41 @@ PredictiveParser::PredictiveParser(vector<Production> rules, set<string> termina
         cout<<endl;
     }
     */
+
     generateFirst();
     cout<<endl;
 
-//    cout<<"-----------------------FIRST-----------------------"<<endl;
-//    for (map<string, set<string>>::iterator it = firstMap.begin(); it != firstMap.end(); ++it)
-//    {
-//        set<string> set = it->second;
-//
-//        cout << "non terminal: " << it->first <<"  "<<set.size()<< endl;
-//        std::set<string>::iterator iter;
-//        for (iter = set.begin(); iter != set.end(); ++iter)
-//        {
-//            cout << *iter << '\t';
-//        }
-//        cout << endl;
-//    }
-//    cout<<endl;
+    cout<<"-----------------------FIRST-----------------------"<<endl;
+    for (map<string, set<string>>::iterator it = firstMap.begin(); it != firstMap.end(); ++it)
+    {
+        set<string> set = it->second;
+
+        cout << "non terminal: " << it->first <<"  "<<set.size()<< endl;
+        std::set<string>::iterator iter;
+        for (iter = set.begin(); iter != set.end(); ++iter)
+        {
+            cout << *iter << '\t';
+        }
+        cout << endl;
+    }
+    cout<<endl;
 
     generateFollow();
     addDependencies();
-//    cout << "-----------------------FOLLOW--------------------" << endl;
-//    for (map<string, set<string>>::iterator it = followMap.begin(); it != followMap.end(); ++it)
-//    {
-//        set<string> set = it->second;
-//
-//        cout << "non terminal: " << it->first << endl;
-//        std::set<string>::iterator iter;
-//        for (iter = set.begin(); iter != set.end(); ++iter)
-//        {
-//            cout << *iter << '\t';
-//        }
-//        cout << endl;
-//    }
-//    cout<<"--------------------------------------------------"<<endl;
+    cout << "-----------------------FOLLOW--------------------" << endl;
+    for (map<string, set<string>>::iterator it = followMap.begin(); it != followMap.end(); ++it)
+    {
+        set<string> set = it->second;
+
+        cout << "non terminal: " << it->first << endl;
+        std::set<string>::iterator iter;
+        for (iter = set.begin(); iter != set.end(); ++iter)
+        {
+            cout << *iter << '\t';
+        }
+        cout << endl;
+    }
+    cout<<"--------------------------------------------------"<<endl;
 
     constructParserTable();
 }
@@ -71,7 +72,9 @@ void PredictiveParser::generateFirst()
 {
     for(set<string>::iterator it = nonTerminals.begin(); it != nonTerminals.end(); it++)
     {
+
         createFirstSet(*it);
+
     }
 
 }
@@ -111,6 +114,7 @@ void PredictiveParser::createFirstSet(string nonTerminal)
         }
         else
         {
+
             createFirstSet(first);
             set<string> s = firstMap[first];
             for(set<string>::iterator it = s.begin(); it != s.end(); it++)
@@ -248,6 +252,7 @@ void PredictiveParser::createFollowSet(string nonTerminal)
 
                     followSolved[nonTerminal] = true;
                     if(followMap.find(it->first) == followMap.end())  createFollowSet(it->first);
+                    followSolved[nonTerminal] = false;
 
                     set<string> followSet= followMap[it->first];
                     for(set<string>::iterator iter = followSet.begin(); iter != followSet.end(); iter ++)
@@ -267,6 +272,8 @@ void PredictiveParser::createFollowSet(string nonTerminal)
                             {
                                 createFollowSet(production[j+1]);
                             }
+                            followSolved[nonTerminal] = false;
+
                             if(followMap[production[j+1]].empty() || dependentOn.find(production[j+1]) != dependentOn.end())
                             {
                                 dependentOn[nonTerminal].push_back(production[j+1]);
@@ -355,7 +362,7 @@ void PredictiveParser::constructParserTable()
             }
             else
             {
-                cout << "There is ambiguity at the production of ";
+                cout << "epsilon  There is ambiguity at the production of ";
                 cout << "NonTerminal: " << hasEpsilon[i] << endl;
                 cout << " At Terminal: " << *it << endl;
             }
@@ -408,12 +415,4 @@ map<string, set<string>> PredictiveParser::getFirstSet()
 map<string, set<string>> PredictiveParser::getFollowSet()
 {
     return followMap;
-}
-set<string> PredictiveParser::get_terminals()
-{
-    return inputs;
-}
-set<string> PredictiveParser::get_nonTerminals()
-{
-    return nonTerminals;
 }
