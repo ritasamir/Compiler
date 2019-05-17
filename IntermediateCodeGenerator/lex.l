@@ -33,6 +33,7 @@ arithop "+"|"-"|"*"|"/"
 "{"  {return CURLEFTBRACKET;}
 "}"  {return CURRIGHTBRACKET;}
 "else" {return ELSEWORD;}
+"minus" {return MINUS;}
 \n {++lineCounter; printLineNumber(lineCounter);}
 
 {relop} {yylval.charsVal = strdup(yytext); return RELOP;}
