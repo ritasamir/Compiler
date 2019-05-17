@@ -82,6 +82,7 @@ vector<int> *nextList;
 %token CURLEFTBRACKET
 %token CURRIGHTBRACKET
 %token ELSEWORD
+%token MINUS
 %token <charsVal> RELOP
 %token <charsVal> ID
 %token <charsVal> ARITHOP
@@ -258,6 +259,16 @@ Expression:
 		|LEFT_BRACKET Expression RIGHTBRACKET
 			{
 				$$=$2;
+			}
+		| MINUS Expression
+			{
+				$$=$2;
+				addLine("ldc "+to_string(-1));
+				if($2==INT_T){
+					addLine("imul");
+				}else{
+					addLine("fmul");						
+				}				
 			}
 		;
 
